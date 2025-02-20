@@ -1,0 +1,120 @@
+.absence-request {
+    width: 150%; /* Ajuster la largeur pour être plus équilibrée */
+   
+    margin: 30px auto; /* Centre l'élément horizontalement */
+    font-family: Arial, sans-serif;
+    background: #fff;
+    padding: 20px; /* Réduction du padding pour éviter un effet de décalage */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+/* Centrer et styliser le titre */
+h2 {
+    background: #d50000;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* Bouton retour */
+a {
+    display: inline-block;
+    background: #d50000;
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    transition: background 0.3s ease;
+}
+
+a:hover {
+    background: #b71c1c;
+}
+
+/* Tableaux */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background: #fff;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background: #f5f5f5;
+}
+
+/* Champ commentaire */
+textarea {
+    width: 100%;
+    min-height: 100px;
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    resize: vertical;
+}
+
+/* Alignement et mise en page */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Permet de centrer verticalement */
+    flex-direction: column;
+    padding: 20px;
+}
+
+/* Sélection et options */
+select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    background: white;
+}
+
+/* Style des boutons */
+button {
+    background: #d50000;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: #b71c1c;
+}
+
+/* Ajustement pour petits écrans */
+@media (max-width: 768px) {
+    .absence-request {
+        width: 90%;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
