@@ -1,0 +1,94 @@
+/* Conteneur principal centré */
+.training-catalog {
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  margin: 100px auto;
+  background: white;
+  padding: 40px;
+  border-radius: 100px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Titre */
+.training-catalog h1 {
+  text-align: center;
+  color: #003366;
+}
+
+/* Section de recherche */
+.search-section {
+  margin-bottom: 20px;
+}
+
+.search-section label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #003366;
+}
+
+/* Sélecteurs */
+.training-catalog select,
+.training-catalog input[type="checkbox"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Bouton */
+.training-catalog button {
+  display: block;
+  width: 100%;
+  background-color: #003366;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.training-catalog button:hover {
+  background-color: #0055aa;
+}
+
+/* Tableau */
+.training-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.training-table th,
+.training-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.training-table th {
+  background-color: #003366;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .training-catalog {
+      width: 90%;
+      padding: 20px;
+      border-radius: 50px;
+  }
+
+  .training-catalog select {
+      font-size: 14px;
+  }
+}
