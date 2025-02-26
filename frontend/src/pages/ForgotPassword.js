@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Login.css"; // Ajoute un fichier CSS pour le style
+import "./Login.css"; // Assurez-vous d'ajouter le fichier CSS pour le style
 
 const Login = ({ onLogin }) => {
   const navigate = useNavigate();

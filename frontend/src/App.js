@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
+import ForgotPassword from "./pages/ForgotPassword";
 import SideBar from "./components/Sidebar/SideBar";
 import AdminSidebar from "./components/Sidebar/AdminSidebar"; // 🔹 Sidebar Admin ajoutée
 import Navbar from "./components/Navbar";
@@ -92,6 +93,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login onLogin={handleLogin} />} />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="*" element={<Navigate to="/login" />} /> {/* 🔹 Redirection par défaut */}
         </Routes>
