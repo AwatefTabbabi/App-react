@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './DocumentRequest.css';
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react'; // Import de l'icône
+import { ArrowLeft } from 'lucide-react';
+
 const DocumentRequest = () => {
     const [document, setDocument] = useState('');
     const [comment, setComment] = useState('');
-    const [status, setStatus] = useState(''); // Initialement vide, pas de statut affiché
+    const [status, setStatus] = useState('');
 
-    const handleSubmit = (e) => {
+    // Fonction pour soumettre la demande de document
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!document) {
@@ -15,26 +17,46 @@ const DocumentRequest = () => {
             return;
         }
 
-        // Logique de soumission de la demande
-        console.log('Document:', document);
-        console.log('Commentaire:', comment);
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/documents/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    document_type: document,
+                    comment: comment
+                }),
+            });
 
-        // Simuler un traitement de demande (par exemple, une API)
-        setStatus('En cours'); // Afficher "En cours" dès l'envoi
+            const data = await response.json();
 
-        // Après un délai de 3 secondes, on met à jour le statut
-        setTimeout(() => {
-            setStatus('Acceptée'); // Simulation de l'acceptation
-        }, 3000);
+            if (response.ok) {
+                setStatus('En cours');
+                // Simulation d'acceptation après 3 secondes
+                setTimeout(() => {
+                    setStatus('Acceptée');
+                }, 3000);
+            } else {
+                setStatus('Rejetée');
+                alert(data.error || 'Erreur lors de la soumission');
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            setStatus('Erreur de connexion');
+            alert('Impossible de se connecter au serveur');
+        }
     };
 
     return (
         <div className="document-request">
-             {/* Icône Retour */}
-      <Link to="/" className="back-icon">
-        <ArrowLeft size={24} />
-      </Link>
+            <Link to="/" className="back-icon">
+                <ArrowLeft size={24} />
+            </Link>
+            
             <h1>Demande d'attestation</h1>
+            
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label>Document à produire <span className="required">*</span></label>
@@ -62,9 +84,8 @@ const DocumentRequest = () => {
                 <button type="submit">ENVOYER</button>
             </form>
 
-            {/* Affichage du statut seulement après le délai ou la mise à jour */}
             {status && (
-                <div className={`status ${status === 'En cours' ? 'pending' : 'accepted'}`}>
+                <div className={`status ${status === 'En cours' ? 'pending' : status === 'Acceptée' ? 'accepted' : 'rejected'}`}>
                     <strong>Statut de la demande :</strong> {status}
                 </div>
             )}

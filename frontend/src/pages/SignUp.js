@@ -1,134 +1,213 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./SignUp.css"; // Ajoute un fichier CSS pour le style
+import "./SignUp.css";
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [phone, setPhone] = useState("");
-  const [identifier, setIdentifier] = useState("");
-  const [department, setDepartment] = useState("");
-  const [contractType, setContractType] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [salary, setSalary] = useState("");
-  const [address, setAddress] = useState("");
+  const [formData, setFormData] = useState({
+    login: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    phone: "",
+    identifier: "",
+    department: "",
+    contract_type: "",
+    start_date: "",
+    salary: "",
+    address: "",
+    fax: "",
+    position: "",
+    photo: null
+  });
   const [error, setError] = useState("");
+  const [preview, setPreview] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData(prev => ({...prev, photo: file}));
+      const reader = new FileReader();
+      reader.onloadend = () => setPreview(reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (password !== confirmPassword) {
+    
+    if (formData.password !== formData.confirmPassword) {
       setError("Les mots de passe ne correspondent pas !");
       return;
     }
 
-    if (username && email && password && phone && identifier && department && contractType && startDate && salary && address) {
-      // Logique pour enregistrer l'utilisateur (par exemple, appel à une API)
-      setError(""); // Réinitialiser l'erreur
+    const data = new FormData();
+    
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== null && value !== "") {
+        data.append(key, value);
+      }
+    });
 
-      // Rediriger immédiatement vers la page de connexion
-      navigate("/"); // Redirection vers la page de connexion après inscription réussie
-    } else {
-      setError("Tous les champs sont obligatoires !");
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/signup/", {
+        method: "POST",
+        body: data,
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        navigate("/");
+      } else {
+        setError(result.error || "Erreur lors de l'inscription");
+      }
+    } catch (err) {
+      setError("Erreur de connexion au serveur");
     }
   };
 
   return (
     <div className="signup-container">
-      <h2>Sign Up</h2>
-      {error && <p className="error">{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <label>Nom d'utilisateur :</label>
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        
-        <label>Email :</label>
+      <h2>Inscription</h2>
+      {error && <div className="error-message">{error}</div>}
+
+      <form onSubmit={handleSubmit} encType="multipart/form-data">
+        <div className="photo-upload-section">
+          <label className="photo-preview">
+            {preview ? (
+              <img src={preview} alt="Aperçu" />
+            ) : (
+              <div className="placeholder">+</div>
+            )}
+            <input
+              type="file"
+              name="photo"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden-input"
+            />
+          </label>
+          <p>Télécharger une photo (JPEG/PNG, max 2MB)</p>
+        </div>
+
+        <label>Email *:</label>
         <input
           type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
           required
         />
-        
-        <label>Mot de passe :</label>
+
+        <label>Username *:</label>
+        <input
+          type="text"
+          name="login"
+          value={formData.login}
+          onChange={handleChange}
+          required
+        />
+
+        <label>Mot de passe *:</label>
         <input
           type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
           required
         />
-        
-        <label>Confirmer le mot de passe :</label>
+
+        <label>Confirmation mot de passe *:</label>
         <input
           type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          name="confirmPassword"
+          value={formData.confirmPassword}
+          onChange={handleChange}
           required
         />
-        
-        <label>Numéro :</label>
+
+        <label>Téléphone *:</label>
         <input
           type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
           required
         />
-        
+
         <label>Identifiant :</label>
         <input
           type="text"
-          value={identifier}
-          onChange={(e) => setIdentifier(e.target.value)}
-          required
+          name="identifier"
+          value={formData.identifier}
+          onChange={handleChange}
         />
-        
+
         <label>Département :</label>
         <input
           type="text"
-          value={department}
-          onChange={(e) => setDepartment(e.target.value)}
-          required
+          name="department"
+          value={formData.department}
+          onChange={handleChange}
         />
-        
+
         <label>Type de contrat :</label>
         <input
           type="text"
-          value={contractType}
-          onChange={(e) => setContractType(e.target.value)}
-          required
+          name="contract_type"
+          value={formData.contract_type}
+          onChange={handleChange}
         />
-        
+
         <label>Date de début :</label>
         <input
           type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          required
+          name="start_date"
+          value={formData.start_date}
+          onChange={handleChange}
         />
-        
+
         <label>Salaire :</label>
         <input
           type="number"
-          value={salary}
-          onChange={(e) => setSalary(e.target.value)}
-          required
+          name="salary"
+          step="0.01"
+          value={formData.salary}
+          onChange={handleChange}
         />
-        
+
         <label>Adresse :</label>
         <textarea
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          required
+          name="address"
+          value={formData.address}
+          onChange={handleChange}
         />
-        
-        <button type="submit">Sign Up</button>
+
+        <label>Fax :</label>
+        <input
+          type="text"
+          name="fax"
+          value={formData.fax}
+          onChange={handleChange}
+        />
+
+        <label>Poste :</label>
+        <input
+          type="text"
+          name="position"
+          value={formData.position}
+          onChange={handleChange}
+        />
+
+        <button type="submit">S'inscrire</button>
       </form>
 
       <div className="login-links">

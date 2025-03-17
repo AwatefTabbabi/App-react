@@ -24,7 +24,7 @@ const SplashScreen = () => {
       >
         {/* Lien direct vers l'image dans public */}
         <img src="/logo.png" alt="Logo" className="logo" />
-        <h1 className="site-name">Nom du Site</h1>
+       
       </motion.div>
     )
   );

@@ -7,7 +7,7 @@
     left: 50%;
     transform: translate(-50%, -50%); /* Déplace le conteneur de 50% de sa propre taille */
     width: 800px;
-    margin: 60px auto;
+    margin: 140px auto;
     background: white;
     padding: 40px;
     border-radius: 100px;

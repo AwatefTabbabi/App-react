@@ -1,6 +1,8 @@
 // AdminDemandes.js
 import React, { useState } from "react";
 import { FaSearch, FaSort } from "react-icons/fa";
+import { ArrowLeft } from 'lucide-react'; // Import de l'icône
+import { Link } from 'react-router-dom';
 import "./AdminDemandes.css"; // Import du fichier CSS
 
 // Données de démonstration
@@ -94,7 +96,11 @@ const AdminDemandes = () => {
 
   return (
     <div className="admin-demandes-container">
+        
       <div className="admin-demandes-content">
+      <Link to="/" className="back-icon">
+        <ArrowLeft size={24} />
+      </Link>
         <h1 className="admin-demandes-title">Gestion des Demandes</h1>
 
         {/* Barre de recherche */}

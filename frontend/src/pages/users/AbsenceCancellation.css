@@ -74,3 +74,40 @@
         font-size: 14px;
     }
 }
+.absence-item {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+.pending { background-color: #fff3cd; }
+.cancelled { background-color: #f8d7da; text-decoration: line-through; }
+.absence-item.pending {
+    background-color: #fff7e6;
+  }
+  
+  .absence-item.approved {
+    background-color: #e6ffed;
+  }
+  
+  .absence-item.rejected {
+    background-color: #ffe6e6;
+  }
+  
+  .absence-item.cancelled {
+    background-color: #f0f0f0;
+    color: #999;
+    text-decoration: line-through;
+  }
+  
+  .status {
+    margin-left: 10px;
+    font-weight: bold;
+  }
+  
+  .absence-comment {
+    font-size: 0.9em;
+    color: #555;
+    margin-top: 5px;
+  }
+  

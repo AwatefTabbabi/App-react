@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { FaBars, FaCalendarTimes, FaBan, FaRegClock, FaChartLine, FaHistory, FaCalendarAlt, FaDollarSign } from "react-icons/fa";
 import { BiSearch } from "react-icons/bi";
+import { FaLock } from "react-icons/fa";
+
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarMenu from "./SidebarMenu";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -40,8 +42,8 @@ const routes = [
   },
   { path: "/mes-competences", name: "Mes compétences", icon: <FontAwesomeIcon icon={faList} /> },
   { path: "/ma-formation", name: "Ma formation", icon: <FontAwesomeIcon icon={faSatelliteDish} /> },
-  /*{ path: "/ma-mobilite", name: "Ma mobilité", icon: <FontAwesomeIcon icon={faExchangeAlt} /> },
-  { path: "/mon-evaluation", name: "Mon évaluation", icon: <FontAwesomeIcon icon={faClipboard} /> },*/
+  { path: "/settings", name: "Settings", icon: <FaLock size={16} /> },
+  /*{ path: "/mon-evaluation", name: "Mon évaluation", icon: <FontAwesomeIcon icon={faClipboard} /> },*/
 ];
 
 const SideBar = ({ children }) => {
@@ -121,4 +123,4 @@ const SideBar = ({ children }) => {
   );
 };
 
-export default SideBar;  
+export default SideBar;

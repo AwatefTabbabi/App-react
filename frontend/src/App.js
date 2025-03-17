@@ -10,14 +10,13 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-d
 import ContactInfo from "./pages/users/ContactInfo";
 import AbsenceRequest from "./pages/users/AbsenceRequest";
 import Login from "./pages/Login";
-
-import EmployeeDetails from "./pages/users/EmployeeDetails";
 import SignUp from "./pages/SignUp";
 import EmployerProfile from "./pages/users/EmployerProfile";
 import TrainingCatalog from "./pages/users/TrainingCatalog";
 import DonneesAdministratives from "./pages/users/DonneesAdministratives";
 import DocumentRequest from "./pages/users/DocumentRequest";
 import AbsenceCancellation from "./pages/users/AbsenceCancellation";
+import Settings from "./pages/users/settings";
 
 // Pages admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -61,8 +60,8 @@ function App() {
               <AdminSidebar />
               <div className="admin-content">
                 <Routes>
-                 {/* <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                  <Route path="/admin/employes" element={<EmployeeManagement />} />*/}
+                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                  {/* <Route path="/admin/employes" element={<EmployeeManagement />} />*/}
                   <Route path="/admin/absence-notifications" element={<AdminAbsenceNotification />} />
                   <Route path="/AdminDemandes" element={<AdminDemandes />} />
                   <Route path="/send-email" element={<SendEmail />} /> 
@@ -79,11 +78,11 @@ function App() {
                 <Route path="/mes-coordonnees" element={<ContactInfo />} />
                 <Route path="/ma-formation" element={<TrainingCatalog />} />
                 
-                <Route path="/employee-details" element={<EmployeeDetails />} />
                 <Route path="/hr-communication" element={<HRCommunication />} />
                 <Route path="/settings/donnees-administratives" element={<DonneesAdministratives />} />
                 <Route path="/settings/demande-d-attestation" element={<DocumentRequest />} />
                 <Route path="/settings/annulation-d-absence" element={<AbsenceCancellation />} />
+                <Route path="/settings" element={<Settings />} />
                 
               </Routes>
             </SideBar>

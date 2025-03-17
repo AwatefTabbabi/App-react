@@ -15,14 +15,20 @@ const Navbar = ({ onLogout }) => {
   }, []);
 
   const handleLogout = () => {
+    // Afficher une boîte de dialogue de confirmation
+    const confirmLogout = window.confirm("Voulez-vous vraiment vous déconnecter ?");
+    
+    // Si l'utilisateur annule, ne rien faire
+    if (!confirmLogout) return;
+  
+    // Si l'utilisateur confirme, procéder à la déconnexion
     localStorage.removeItem("token");
     sessionStorage.removeItem("token");
     localStorage.removeItem("role"); // Supprime aussi le rôle stocké
-
+  
     onLogout(); // Mettre à jour l'état d'authentification
     navigate("/login");
   };
-
   return (
     <nav className="navbar">
       <div className="navbar-left">
