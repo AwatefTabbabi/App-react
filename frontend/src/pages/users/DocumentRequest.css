@@ -15,7 +15,8 @@
 }
 
 /* Titre */
-.document-request h1 {
+.document-request h2 {
+    text-align: center;
     color: #003366;
     font-size: 22px;
     margin-bottom: 20px;

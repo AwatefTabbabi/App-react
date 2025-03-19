@@ -10,9 +10,14 @@ from rest_framework_simplejwt.exceptions import InvalidToken, AuthenticationFail
 import json
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 import json
 import logging
+from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from django.contrib.auth.decorators import login_required
+from .models import AbsenceRequest
+
 logger = logging.getLogger(__name__)
 @csrf_exempt
 def login_view(request):
@@ -47,27 +52,35 @@ def logout_view(request):
 
 
 
+
 User = get_user_model()
 
 @csrf_exempt
 def signup(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        email = data.get('email')
-        login = data.get('username')
-        phone = data.get('phone')
-        password = data.get('password')
-        identifier = data.get('identifier')
-        department = data.get('department')
-        contract_type = data.get('contractType')
-        start_date = data.get('startDate')
-        salary = data.get('salary')
-        address = data.get('address')
-
-        if not email or not login or not phone or not password:
-            return JsonResponse({'error': 'Tous les champs obligatoires doivent être remplis'}, status=400)
-
         try:
+            # Access form data from request.POST and request.FILES
+            email = request.POST.get('email')
+            login = request.POST.get('login')  # Matches React's 'login' field
+            phone = request.POST.get('phone')
+            password = request.POST.get('password')
+            identifier = request.POST.get('identifier')
+            department = request.POST.get('department')
+            contract_type = request.POST.get('contract_type')  # Matches React's 'contract_type'
+            start_date = request.POST.get('start_date')
+            salary = request.POST.get('salary')
+            address = request.POST.get('address')
+            fax = request.POST.get('fax')
+            position = request.POST.get('position')
+            photo = request.FILES.get('photo')  # Uploaded file
+
+            # Check required fields
+            required_fields = ['email', 'login', 'phone', 'password']
+            for field in required_fields:
+                if not request.POST.get(field):
+                    return JsonResponse({'error': f'Missing required field: {field}'}, status=400)
+
+            # Create user with the provided data
             user = User.objects.create_user(
                 email=email,
                 login=login,
@@ -78,13 +91,18 @@ def signup(request):
                 contract_type=contract_type,
                 start_date=start_date,
                 salary=salary,
-                address=address
+                address=address,
+                fax=fax,
+                position=position,
+                photo=photo  # Assign the uploaded photo
             )
-            return JsonResponse({'message': 'Utilisateur créé avec succès'}, status=201)
+
+            return JsonResponse({'message': 'User created successfully'}, status=201)
+        except IntegrityError:
+            return JsonResponse({'error': 'Email already exists'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
-
-    return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
 @csrf_exempt
@@ -140,43 +158,50 @@ def create_absence_request(request):
 
 
 
+
+
+
+
 logger = logging.getLogger(__name__)
 
 @csrf_exempt
 def cancel_absence(request):
-    if request.method == 'POST':
+     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            absence_type = data.get('type')
-            comment = data.get('comment', '')  # Récupération du commentaire
 
+            # Tu récupères l'utilisateur connecté (session Django)
+            user = request.user
+
+            # Pour les tests sans authentification, tu peux mettre un user en dur
+            if user.is_anonymous:
+                from django.contrib.auth import get_user_model
+                User = get_user_model()
+                user = User.objects.get(email="admin@example.com")  # Remplace par un email valide dans ta base
+
+            # Extraire les données envoyées par le frontend
+            absence_type = data.get('type')
+            comment = data.get('comment', '') 
+
+            # Vérification de base (optionnelle mais conseillée)
             if not absence_type:
                 return JsonResponse({'error': 'Type d\'absence requis'}, status=400)
 
-        # Recherche des demandes en attente du même type
-            # Dans cancel_absence (views.py)
-            logger.info(
-                     f"Recherche des demandes - "
-                    f"Utilisateur: {request.user}, "
-                    f"Type: {absence_type}, "
-                    f"Status: pending"
-            )
+            logger.info(f"Utilisateur: {user.email}, Type d'absence: {absence_type}, Commentaire: {comment}")
+
+            # Filtrer les absences en attente pour cet utilisateur et le type spécifié
             absences = AbsenceRequest.objects.filter(
-                    user=request.user,
-                    type=absence_type,
-                    status='pending'
+                user=user,
+                type=absence_type,
+                status='pending'
             )
-            logger.info(f"Résultats trouvés : {absences.count()}")
 
             if not absences.exists():
                 return JsonResponse({'error': 'Aucune demande trouvée'}, status=404)
 
-        # Mise à jour avec le commentaire
-            updated_count = absences.update(
-                status='cancelled',
-                comment=comment  # Sauvegarde du commentaire
-            )
-        
+            # Mise à jour des absences pour changer leur statut à 'cancelled'
+            updated_count = absences.update(status='cancelled', comment=comment)
+
             return JsonResponse({
                 'status': 'success',
                 'message': f'{updated_count} demande(s) annulée(s)',
@@ -184,24 +209,53 @@ def cancel_absence(request):
             })
 
         except json.JSONDecodeError:
-            return JsonResponse({'error': 'JSON invalide'}, status=400)
+            return JsonResponse({'error': 'Format JSON invalide'}, status=400)
         except Exception as e:
-            logger.error(f"Erreur: {str(e)}")
+            logger.error(f"Erreur lors de l'annulation : {str(e)}")
             return JsonResponse({'error': 'Erreur serveur'}, status=500)
+
+        return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
 @csrf_exempt
 def document_request(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
         try:
-            DocumentRequest.objects.create(
-                user=request.user,
-                document_type=data['document_type'],
-                comment=data.get('comment', ''),
+            data = json.loads(request.body)
+
+            # Récupération de l'utilisateur connecté
+            user = request.user
+
+            # Pour tester sans authentification, assigner un utilisateur en dur
+            if user.is_anonymous:
+                User = get_user_model()
+                user = User.objects.get(email="admin@example.com")  # Remplace par un email valide
+
+            # Extraction des données envoyées par le frontend
+            document_type = data.get('document_type')
+            comment = data.get('comment', '')
+
+            # Vérification des champs requis
+            if not document_type:
+                return JsonResponse({'error': 'Le type de document est requis'}, status=400)
+
+            # Création de la demande de document
+            document_request = DocumentRequest.objects.create(
+                user=user,
+                document_type=document_type,
+                comment=comment,
+                status='pending'
             )
-            return JsonResponse({'status': 'success'})
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Demande de document créée avec succès',
+                'document_id': document_request.id
+            }, status=201)
+
         except Exception as e:
+            print(f"Erreur : {e}")
             return JsonResponse({'error': str(e)}, status=400)
 
+    return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
 def get_announcements(request):
     announcements = HRAnnouncement.objects.all().values()
     return JsonResponse(list(announcements), safe=False)
@@ -215,29 +269,55 @@ def get_absences(request):
     )
     return JsonResponse(list(absences), safe=False)
 # Ajoutez ceci dans views.py
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
-def get_user_data(request):
-    user = request.user
-    data = {
-        'email': user.email,
-        'phone': user.phone,
-        'fax': user.fax,
-        'department': user.department,
-        'contract_type': user.contract_type,
-        'start_date': user.start_date,
-        'salary': str(user.salary) if user.salary else None,
-        'address': user.address,
-        'photo': user.photo.url if user.photo else None,
-    }
-    return JsonResponse(data)
+def get_account_by_email(request):
+    try:
+        # Vérification de l'utilisateur
+        user = request.user
+        print(f"Utilisateur authentifié: {user}")  # Ajouter un log pour vérifier l'utilisateur
+        if not user:
+            return JsonResponse({"error": "User not found"}, status=404)
+
+        return JsonResponse({
+            "user_id": user.id,
+            "email": user.email,
+            "phone": user.phone,
+            "identifier": user.identifier,
+            "department": user.department,
+            "contract_type": user.contract_type,
+            "start_date": str(user.start_date),
+            "salary": str(user.salary) if user.salary else None,
+            "address": user.address,
+            'photo': user.photo.url if user.photo else None,
+        })
+
+    except TokenError as e:
+        print(f"Token error: {str(e)}")  # Log des erreurs de token
+        return JsonResponse({"error": f"Token Error: {str(e)}"}, status=401)
+    except InvalidToken as e:
+        print(f"Invalid token: {str(e)}")  # Log du token invalide
+        return JsonResponse({"error": f"Invalid Token: {str(e)}"}, status=401)
+    except Exception as e:
+        print(f"Erreur inconnue: {str(e)}")  # Log pour toute autre erreur
+        return JsonResponse({"error": f"Erreur inconnue: {str(e)}"}, status=500)
+
+# views.py
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def update_contact(request):
     user = request.user
-    user.phone = request.data.get('telephone')
-    user.fax = request.data.get('fax')
-    user.save()
-    return JsonResponse({'status': 'success'})
+    try:
+        data = json.loads(request.body)
+        # Mise à jour des champs de contact
+        user.phone = data.get('telephone', user.phone)
+        user.fax = data.get('fax', user.fax)
+        
+        user.save()
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)

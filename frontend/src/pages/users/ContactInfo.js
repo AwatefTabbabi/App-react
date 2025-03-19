@@ -5,34 +5,31 @@ import axios from 'axios';
 import './ContactInfo.css';
 
 function ContactInfo() {
-  const [contactData, setContactData] = useState({
+  const [userData, setUserData] = useState({
     email: "",
     telephone: "",
     portable: "",
-    fax: ""
+    fax: "",
+    address: "",
   });
 
   useEffect(() => {
-    const fetchContactData = async () => {
-      const token = localStorage.getItem('access'); 
-      if (!token) {
-        console.log("Aucun token trouvé !");
-        return;
-      }
-
+    const fetchUserData = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/user/', {
+        const response = await axios.get('http://127.0.0.1:8000/get_account_by_email', {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access')}` 
-        }
+            'Authorization': `Bearer ${localStorage.getItem('access')}`
+          }
         });
 
         const data = response.data;
-        setContactData({
+        setUserData({
           email: data.email || "",
-          telephone: data.telephone || "",  
+          telephone: data.phone || "",
           portable: data.portable || "",
-          fax: data.fax || ""
+          fax: data.fax || "",
+          address: data.address || "",
+          
         });
 
       } catch (error) {
@@ -40,111 +37,103 @@ function ContactInfo() {
       }
     };
 
-    fetchContactData();
+    fetchUserData();
   }, []);
 
   const handleChange = (e) => {
-    setContactData({
-      ...contactData,
+    setUserData({
+      ...userData,
       [e.target.name]: e.target.value
     });
   };
 
   const handleSubmit = async () => {
-    
-  try {
-    const response = await fetch('http://127.0.0.1:8000/api/user/update/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('access')}`
-      },
-      body: JSON.stringify(contactData) // Envoyer les données au format JSON
-    });
+    try {
+      const response = await axios.post(
+        'http://127.0.0.1:8000/api/user/update/',
+        userData,
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('access')}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
 
-    if (response.ok) {
-      alert('Informations mises à jour !');
+      if (response.status === 200) {
+        alert('Informations mises à jour !');
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
     }
-  } catch (error) {
-    console.error('Erreur:', error);
-  }
-
   };
 
   return (
-    <div className="container">
-    <Link to="/" className="back-icon">
-      <ArrowLeft size={24} />
-    </Link>
-    <div className="card">
-      <h2>Adresses</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Sélectionné</th>
-            <th>Type d'adresse</th>
-            <th>Pays</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><input type="checkbox" /></td>
-            <td>Adresse de résidence</td>
-            <td>Tunisie</td>
-          </tr>
-          <tr>
-            <td><input type="checkbox" /></td>
-            <td>Adresse domicile</td>
-            <td>Tunisie</td>
-          </tr>
-        </tbody>
-      </table>
+    <div className="info-container">
+      <Link to="/" className="back-icon">
+        <ArrowLeft size={24} />
+      </Link>
+      <div className="card">
 
-      <h2>Contacts</h2>
-      <div className="form-group">
-        <label>Courrier électronique personnel</label>
-        <input 
-          type="email" 
-          name="email"
-          value={contactData.email} 
-          onChange={handleChange} 
-        />
-      </div>
-      <div className="form-group">
-        <label>N° de téléphone personnel</label>
-        <input 
-          type="text" 
-          name="telephone"
-          value={contactData.telephone} 
-          onChange={handleChange} 
-        />
-      </div>
-      <div className="form-group">
-        <label>N° de phone</label>
-        <input 
-          type="text" 
-          name="portable"
-          value={contactData.portable} 
-          onChange={handleChange} 
-        />
-      </div>
-      <div className="form-group">
-        <label>N° de fax personnel</label>
-        <input 
-          type="text" 
-          name="fax"
-          value={contactData.fax} 
-          onChange={handleChange} 
-        />
-      </div>
+        <h2>Coordonnées</h2>
+        <div className="form-group">
+          <label>Adresse</label>
+          <textarea
+            name="address"
+            value={userData.address}
+            onChange={handleChange}
+          />
+        </div>
 
-      <div className="buttons">
-        <button className="draft">DRAFT</button>
-        <button className="send" onClick={handleSubmit}>ENVOYER</button>
+        <div className="form-group">
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            value={userData.email}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Téléphone fixe</label>
+          <input
+            type="text"
+            name="telephone"
+            value={userData.telephone}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Téléphone portable</label>
+          <input
+            type="text"
+            name="portable"
+            value={userData.portable}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Fax</label>
+          <input
+            type="text"
+            name="fax"
+            value={userData.fax}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="buttons">
+          <button className="draft">Enregistrer brouillon</button>
+          <button className="send" onClick={handleSubmit}>
+            Mettre à jour
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 }
 
 export default ContactInfo;

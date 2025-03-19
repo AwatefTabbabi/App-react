@@ -1,96 +1,85 @@
-import React, { useState, useEffect } from 'react';
-import './DocumentRequest.css';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import axios from 'axios';
+import './DocumentRequest.css';
 
-const DocumentRequest = () => {
-    const [document, setDocument] = useState('');
-    const [comment, setComment] = useState('');
-    const [status, setStatus] = useState('');
+function DocumentRequest() {
+  const navigate = useNavigate();
+  const [documentType, setDocumentType] = useState('');
+  const [comment, setComment] = useState('');
 
-    // Fonction pour soumettre la demande de document
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        if (!document) {
-            alert("Veuillez sélectionner un document !");
-            return;
-        }
+    if (!documentType) {
+      alert('Veuillez sélectionner un document !');
+      return;
+    }
 
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/documents/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify({
-                    document_type: document,
-                    comment: comment
-                }),
-            });
+    const token = localStorage.getItem('token');
 
-            const data = await response.json();
-
-            if (response.ok) {
-                setStatus('En cours');
-                // Simulation d'acceptation après 3 secondes
-                setTimeout(() => {
-                    setStatus('Acceptée');
-                }, 3000);
-            } else {
-                setStatus('Rejetée');
-                alert(data.error || 'Erreur lors de la soumission');
-            }
-        } catch (error) {
-            console.error('Erreur:', error);
-            setStatus('Erreur de connexion');
-            alert('Impossible de se connecter au serveur');
-        }
+    const documentData = {
+      document_type: documentType,
+      comment: comment,
     };
 
-    return (
-        <div className="document-request">
-            <Link to="/" className="back-icon">
-                <ArrowLeft size={24} />
-            </Link>
-            
-            <h1>Demande d'attestation</h1>
-            
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>Document à produire <span className="required">*</span></label>
-                    <select 
-                        value={document} 
-                        onChange={(e) => setDocument(e.target.value)} 
-                        required
-                    >
-                        <option value="" disabled>-- Sélectionnez un document --</option>
-                        <option value="Attestation de salaire">Attestation de salaire</option>
-                        <option value="Attestation de Travail">Attestation de Travail</option>
-                        <option value="Titre de congé">Titre de congé</option>
-                    </select>
-                </div>
-                
-                <div className="form-group">
-                    <label>Commentaire du demandeur</label>
-                    <textarea 
-                        value={comment} 
-                        onChange={(e) => setComment(e.target.value)} 
-                        placeholder="Ajoutez un commentaire (optionnel)"
-                    />
-                </div>
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/documents/",
+        documentData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          withCredentials: true, // Important si CORS_ALLOW_CREDENTIALS = True
+        }
+      );
 
-                <button type="submit">ENVOYER</button>
-            </form>
+      console.log("Demande de document créée :", response.data);
+      alert("Demande envoyée !");
+    } catch (error) {
+      console.error("Erreur front :", error);
+      alert("Erreur de connexion");
+    }
+  };
 
-            {status && (
-                <div className={`status ${status === 'En cours' ? 'pending' : status === 'Acceptée' ? 'accepted' : 'rejected'}`}>
-                    <strong>Statut de la demande :</strong> {status}
-                </div>
-            )}
-        </div>
-    );
-};
+  return (
+    <div className="document-request">
+      {/* Icône Retour */}
+      <Link to="/" className="back-icon">
+        <ArrowLeft size={24} />
+      </Link>
+
+      <h2>Demande d'attestation</h2>
+
+      <h3>Type de document</h3>
+      <select
+        value={documentType}
+        onChange={(e) => setDocumentType(e.target.value)}
+        required
+      >
+        <option value="" disabled>-- Sélectionnez un document --</option>
+        <option value="Attestation de salaire">Attestation de salaire</option>
+        <option value="Attestation de Travail">Attestation de Travail</option>
+        <option value="Titre de congé">Titre de congé</option>
+      </select>
+
+      <h3>Commentaire du demandeur</h3>
+      <textarea
+        className="comment-textarea"
+        placeholder="Ajoutez un commentaire (optionnel)"
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+      ></textarea>
+
+      <div className="buttons">
+        <button onClick={handleSubmit}>ENVOYER</button>
+        <button onClick={() => navigate("/dashboard")}>FERMER</button>
+      </div>
+    </div>
+  );
+}
 
 export default DocumentRequest;

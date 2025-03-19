@@ -18,9 +18,11 @@ class AccountManager(BaseUserManager):
         return self.create_user(email, login, phone, password, **extra_fields)
 
 class User(AbstractBaseUser):
+    USERNAME_FIELD = 'email'  # Assurez-vous que l'email est utilisé pour l'authentification
+    REQUIRED_FIELDS = ['email']
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=15)
     login = models.CharField(max_length=200)
-    email = models.EmailField(max_length=200, unique=True)
-    phone = models.CharField(max_length=200)
     date_creation = models.DateTimeField("date creation", auto_now_add=True)
     identifier = models.CharField(max_length=200, blank=True, null=True)
     department = models.CharField(max_length=200, blank=True, null=True)
@@ -85,17 +87,17 @@ class AbsenceRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class DocumentRequest(models.Model):
-    DOCUMENT_TYPES = [
-        ('Attestation de salaire', 'Attestation de salaire'),
-        ('Attestation de Travail', 'Attestation de Travail'),
-        ('Titre de congé', 'Titre de congé')
+    STATUS_CHOICES = [
+        ('En cours', 'En cours'),
+        ('Acceptée', 'Acceptée'),
+        ('Rejetée', 'Rejetée'),
     ]
     
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    document_type = models.CharField(max_length=50, choices=DOCUMENT_TYPES)
+    document_type = models.CharField(max_length=100)
     comment = models.TextField(blank=True)
-    status = models.CharField(max_length=20, default='En cours')
-    requested_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='En cours')
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class HRAnnouncement(models.Model):
     title = models.CharField(max_length=200)

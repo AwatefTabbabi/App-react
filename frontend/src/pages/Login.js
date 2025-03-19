@@ -15,14 +15,14 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8000/api/login/", {
+      const response = await axios.post("http://localhost:8000/api/token/", {
         email,
         password,
-      });
+    });
 
-      if (response.data.status === "success") {
-        login(response.data.role); // Utilisez `login` du contexte pour mettre à jour l'état d'authentification
-
+    if (response.data.access) {
+      localStorage.setItem('access', response.data.access); // Token JWT
+      localStorage.setItem('refresh', response.data.refresh);
         // Rediriger en fonction de l'email
         if (email === "admin@example.com" && password === "password") {
           localStorage.setItem("role", "admin"); // Stocke "admin"

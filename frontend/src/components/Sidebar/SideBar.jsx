@@ -3,7 +3,6 @@ import { NavLink } from "react-router-dom";
 import { FaBars, FaCalendarTimes, FaBan, FaRegClock, FaChartLine, FaHistory, FaCalendarAlt, FaDollarSign } from "react-icons/fa";
 import { BiSearch } from "react-icons/bi";
 import { FaLock } from "react-icons/fa";
-
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarMenu from "./SidebarMenu";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,11 +14,11 @@ const routes = [
     name: "Mes données individuelles",
     icon: <FontAwesomeIcon icon={faInfoCircle} />, 
     subRoutes: [
-      { path: "/settings/donnees-administratives", name: "Données administratives", icon: <FontAwesomeIcon icon={faFileAlt} /> },
-      { path: "/settings/demande-d-attestation", name: "Demande d'attestation", icon: <FontAwesomeIcon icon={faFolder} /> },
+      { path: "/donnees-administratives", name: "Données administratives", icon: <FontAwesomeIcon icon={faFileAlt} /> },
+      { path: "/demande-d-attestation", name: "Demande d'attestation", icon: <FontAwesomeIcon icon={faFolder} /> },
       /*{ path: "/settings/demande-de-badge", name: "Demande de badge", icon: <FontAwesomeIcon icon={faIdBadge} /> },*/
       
-      { path: "/settings/synthese", name: "Synthèse", icon: <FontAwesomeIcon icon={faUsers} /> },
+      { path: "/synthese", name: "Synthèse", icon: <FontAwesomeIcon icon={faUsers} /> },
       { path: "/mes-coordonnees", name: "Mes coordonnées", icon: <FontAwesomeIcon icon={faUser} /> },
       /*{ path: "/settings/mes-coordonnees-bancaires", name: "Mes coordonnées bancaires", icon: <FontAwesomeIcon icon={faCreditCard} /> },
       { path: "/settings/mon-etat-civil", name: "Mon état civil", icon: <FontAwesomeIcon icon={faUser} /> },
@@ -33,11 +32,11 @@ const routes = [
     subRoutes: [
       
       { path: "/demande-absence", name: "Demande d'absence", icon: <FaRegClock /> },
-      { path: "/settings/annulation-d-absence", name: "Annulation d'absence", icon: <FaBan /> },
+      { path: "/annulation-d-absence", name: "Annulation d'absence", icon: <FaBan /> },
      /* { path: "/settings/mon-planning-d-absences", name: "Mon planning d'absences", icon: <FaChartLine /> },
       { path: "/settings/historique-des-absences", name: "Historique des absences", icon: <FaHistory /> },
       { path: "/settings/planning-d-equipe", name: "Planning d'équipe", icon: <FaCalendarAlt /> },*/
-      { path: "/settings/consultation-des-soldes", name: "Consultation des soldes", icon: <FaDollarSign /> },
+      { path: "/consultation-des-soldes", name: "Consultation des soldes", icon: <FaDollarSign /> },
     ],
   },
   { path: "/mes-competences", name: "Mes compétences", icon: <FontAwesomeIcon icon={faList} /> },
