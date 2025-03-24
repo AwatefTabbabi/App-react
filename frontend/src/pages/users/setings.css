@@ -1,0 +1,80 @@
+/* Conteneur principal (plus petit et centré) */
+.reclamation-form {
+    width: 90%;
+    max-width: 450px; /* Réduction de la largeur */
+    margin: 8vh auto; /* Centrage vertical */
+    padding: 15px; /* Réduction du padding */
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    text-align: center;
+  }
+  
+  /* Titre */
+  .reclamation-form h2 {
+    font-size: 20px; /* Taille réduite */
+    font-weight: bold;
+    color: #004085;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  
+  /* Labels */
+  .reclamation-form label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 3px;
+    color: #333;
+    font-size: 13px; /* Taille plus petite */
+    text-align: left;
+  }
+  
+  /* Champs de saisie */
+  .reclamation-form input,
+  .reclamation-form textarea,
+  .reclamation-form select {
+    width: 100%;
+    padding: 8px; /* Réduction du padding */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 13px; /* Taille réduite */
+    margin-bottom: 10px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  /* Effet focus sur les champs */
+  .reclamation-form input:focus,
+  .reclamation-form textarea:focus,
+  .reclamation-form select:focus {
+    border-color: #004085;
+    outline: none;
+    box-shadow: 0px 0px 4px rgba(0, 64, 133, 0.3);
+  }
+  
+  /* Bouton */
+  .reclamation-form button {
+    width: 100%;
+    background: #004085;
+    color: white;
+    padding: 10px; /* Réduction du padding */
+    border: none;
+    border-radius: 5px;
+    font-size: 15px; /* Taille réduite */
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Bouton hover */
+  .reclamation-form button:hover {
+    background: #660000;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .reclamation-form {
+        width: 95%;
+        padding: 12px;
+    }
+  }

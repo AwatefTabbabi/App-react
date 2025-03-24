@@ -46,7 +46,7 @@ const Navbar = ({ onLogout }) => {
         {/* 🔹 Afficher FiFileText uniquement si c'est un ADMIN */}
         {role === "ADMIN" && (
           <>
-           <FiMail className="icon" onClick={() => navigate("/send-email")} /> {/* Redirection vers SendEmail */}
+           <FiMail className="icon" onClick={() => navigate("/AdminEmails")} /> {/* Redirection vers SendEmail */}
            <FiBell className="icon" onClick={() => navigate("/AdminDemandes")} /> 
             
           </>

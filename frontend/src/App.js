@@ -20,7 +20,7 @@ import Settings from "./pages/users/settings";
 
 // Pages admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import SendEmail from "./pages/admin/SendEmail"; 
+import AdminEmails from "./pages/admin/AdminEmails"; 
 import EmployeeManagement from "./pages/admin/EmployeeManagement";
 import AdminDemandes from "./pages/admin/AdminDemandes";
 import AdminAbsenceNotification from "./pages/admin/AdminAbsenceNotification";
@@ -64,7 +64,7 @@ function App() {
                   {/* <Route path="/admin/employes" element={<EmployeeManagement />} />*/}
                   <Route path="/admin/absence-notifications" element={<AdminAbsenceNotification />} />
                   <Route path="/AdminDemandes" element={<AdminDemandes />} />
-                  <Route path="/send-email" element={<SendEmail />} /> 
+                  <Route path="/AdminEmails" element={<AdminEmails />} /> 
                   <Route path="/hr-communication" element={<HRCommunication />} />
                   <Route path="*" element={<Navigate to="/admin/dashboard" />} /> {/* 🔹 Redirection admin */}
                 </Routes>
@@ -79,9 +79,9 @@ function App() {
                 <Route path="/ma-formation" element={<TrainingCatalog />} />
                 
                 <Route path="/hr-communication" element={<HRCommunication />} />
-                <Route path="/settings/donnees-administratives" element={<DonneesAdministratives />} />
-                <Route path="/settings/demande-d-attestation" element={<DocumentRequest />} />
-                <Route path="/settings/annulation-d-absence" element={<AbsenceCancellation />} />
+                <Route path="/donnees-administratives" element={<DonneesAdministratives />} />
+                <Route path="/demande-d-attestation" element={<DocumentRequest />} />
+                <Route path="/annulation-d-absence" element={<AbsenceCancellation />} />
                 <Route path="/settings" element={<Settings />} />
                 
               </Routes>
