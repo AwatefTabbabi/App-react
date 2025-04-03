@@ -21,7 +21,7 @@ import Settings from "./pages/users/settings";
 // Pages admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminEmails from "./pages/admin/AdminEmails"; 
-import EmployeeManagement from "./pages/admin/EmployeeManagement";
+import Catalogue from "./pages/admin/catalogue";
 import AdminDemandes from "./pages/admin/AdminDemandes";
 import AdminAbsenceNotification from "./pages/admin/AdminAbsenceNotification";
 function App() {
@@ -61,7 +61,7 @@ function App() {
               <div className="admin-content">
                 <Routes>
                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                  {/* <Route path="/admin/employes" element={<EmployeeManagement />} />*/}
+                  <Route path="/catalogue" element={<Catalogue />} />
                   <Route path="/admin/absence-notifications" element={<AdminAbsenceNotification />} />
                   <Route path="/AdminDemandes" element={<AdminDemandes />} />
                   <Route path="/AdminEmails" element={<AdminEmails />} /> 

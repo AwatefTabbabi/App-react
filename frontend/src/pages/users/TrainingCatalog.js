@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import "./TrainingCatalog.css";
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react'; // Import de l'icône
+import { ArrowLeft } from 'lucide-react';
+
 const TrainingCatalog = () => {
   const [searchCriteria, setSearchCriteria] = useState({
     offer: '',
@@ -10,12 +11,33 @@ const TrainingCatalog = () => {
     eLearning: false,
   });
 
-  const [results] = useState([
-    { name: 'STAGTST', id: 'STAGTST', duration: 2.0, unit: 'Jour', eLearning: false },
-    { name: 'ANGLAIS GENERAL ELEMENTARY 2', id: 'ACTION152', duration: 7.0, unit: 'Jour', eLearning: true },
-  ]);
+  const [courses, setCourses] = useState([]);
+  const [filteredResults, setFilteredResults] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [filteredResults, setFilteredResults] = useState(results);
+  // Récupération des données depuis l'API Django
+  useEffect(() => {
+    fetch('/trainings/')
+      .then(response => response.json())
+      .then(data => {
+        const formattedData = data.map(course => ({
+          name: course.name,
+          id: course.course_id,
+          duration: course.duration,
+          unit: course.unit,
+          eLearning: course.e_learning,
+          domain: course.domain,
+          theme: course.theme
+        }));
+        setCourses(formattedData);
+        setFilteredResults(formattedData);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        setLoading(false);
+      });
+  }, []);
 
   // Gestion du changement des inputs
   const handleInputChange = (e) => {
@@ -26,26 +48,30 @@ const TrainingCatalog = () => {
     }));
   };
 
-  // Filtrage des résultats
+  // Filtrage des résultats selon les critères
   const handleSearch = () => {
-    const filtered = results.filter((course) => {
+    const filtered = courses.filter((course) => {
       return (
-        (searchCriteria.offer === '' || course.name.toLowerCase().includes(searchCriteria.offer.toLowerCase())) &&
-        (searchCriteria.eLearning === false || course.eLearning === true)
+        (searchCriteria.offer === '' || course.domain === searchCriteria.offer) &&
+        (searchCriteria.domain === '' || course.domain === searchCriteria.domain) &&
+        (searchCriteria.theme === '' || course.theme === searchCriteria.theme) &&
+        (!searchCriteria.eLearning || course.eLearning)
       );
     });
     setFilteredResults(filtered);
   };
 
+  if (loading) {
+    return <div className="training-catalog">Chargement en cours...</div>;
+  }
+
   return (
     <div className="training-catalog">
-       {/* Icône Retour */}
-       <Link to="/" className="back-icon">
+      <Link to="/" className="back-icon">
         <ArrowLeft size={24} />
       </Link>
       <h1>Catalogue de formation</h1>
 
-      {/* Critères de recherche */}
       <div className="search-section">
         <h2>Critères de recherche</h2>
 
@@ -54,6 +80,7 @@ const TrainingCatalog = () => {
           <select name="offer" onChange={handleInputChange}>
             <option value="">Toutes</option>
             <option value="Langue">Langue</option>
+            <option value="Informatique">Informatique</option>
           </select>
         </div>
 
@@ -62,6 +89,7 @@ const TrainingCatalog = () => {
           <select name="domain" onChange={handleInputChange}>
             <option value="">Tous</option>
             <option value="Informatique">Informatique</option>
+            <option value="Management">Management</option>
           </select>
         </div>
 
@@ -70,6 +98,7 @@ const TrainingCatalog = () => {
           <select name="theme" onChange={handleInputChange}>
             <option value="">Tous</option>
             <option value="Développement">Développement</option>
+            <option value="Réseaux">Réseaux</option>
           </select>
         </div>
 
@@ -85,10 +114,9 @@ const TrainingCatalog = () => {
           </label>
         </div>
 
-        <button onClick={handleSearch}>SEARCH</button>
+        <button onClick={handleSearch}>RECHERCHER</button>
       </div>
 
-      {/* Tableau des formations */}
       <table className="training-table">
         <thead>
           <tr>

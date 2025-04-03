@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
-import { AuthContext } from "../AuthContext"; // Assurez-vous que le chemin est correct
+import { AuthContext } from "../context/AuthContext"; // Assurez-vous que le chemin est correct
 import axios from "axios";
 
 const Login = ({ onLogin }) => {
@@ -10,7 +10,9 @@ const Login = ({ onLogin }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { login } = useContext(AuthContext); // Utilisez `login` du contexte
-
+  const token = localStorage.getItem('access_token');
+  console.log("Token récupéré :", token);
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 

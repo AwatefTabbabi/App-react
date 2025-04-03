@@ -1,22 +1,23 @@
-// AuthContext.js
+// AuthContext.jsx
 import React, { createContext, useState } from "react";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-
-  const login = (userData) => {
-    setUser(userData); // Stocker les données de l'utilisateur
-  };
-
-  const logout = () => {
-    setUser(null); // Réinitialiser les données de l'utilisateur
-  };
+  
+  const login = (userData) => setUser(userData);
+  const logout = () => setUser(null);
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuth = () => {
+  const context = React.useContext(AuthContext);
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
+  return context;
 };
