@@ -175,4 +175,44 @@ class CatalogueFormation(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.category})"
+from django.db import models
+from django.contrib.auth import get_user_model
+from .models import CatalogueFormation  # ou import relatif
+
+User = get_user_model()
+
+class Inscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    formation = models.ForeignKey(CatalogueFormation, on_delete=models.CASCADE)
+    date_inscription = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'formation')
+        verbose_name = "Inscription"
+        verbose_name_plural = "Inscriptions"
+
+    def __str__(self):
+        return f"{self.user.email} inscrit à {self.formation.title}"
+
+
+
+class Reclamation(models.Model):
+    COMPLAINT_CHOICES = [
+        ('retard', "Retard d'acceptation des demandes"),
+        ('document', "Problème avec un document"),
+        ('absence', "Absence non validée"),
+        ('autre', "Autre"),
+    ]
+
+    name = models.CharField(max_length=100)  # Champ direct pour le nom
+    email = models.EmailField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True) 
+    phone = models.CharField(max_length=20)
+    complaint_type = models.CharField(max_length=20, choices=COMPLAINT_CHOICES)
+    details = models.TextField()
+    file = models.FileField(upload_to='reclamations/', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Réclamation de {self.name} ({self.complaint_type})"
     

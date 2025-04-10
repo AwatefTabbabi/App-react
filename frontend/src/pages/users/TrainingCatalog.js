@@ -5,60 +5,89 @@ import { ArrowLeft } from 'lucide-react';
 
 const TrainingCatalog = () => {
   const [searchCriteria, setSearchCriteria] = useState({
-    offer: '',
-    domain: '',
-    theme: '',
-    eLearning: false,
+    title: '',
+    category: '',
+    trainer: '',
+    maxDuration: '',
+    maxPrice: '',
   });
 
   const [courses, setCourses] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [successMessage, setSuccessMessage] = useState("");
 
-  // Récupération des données depuis l'API Django
   useEffect(() => {
-    fetch('/trainings/')
+    fetch('http://localhost:8000/api/catalogue/', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access")}`
+      }
+    })
       .then(response => response.json())
       .then(data => {
-        const formattedData = data.map(course => ({
-          name: course.name,
-          id: course.course_id,
-          duration: course.duration,
-          unit: course.unit,
-          eLearning: course.e_learning,
-          domain: course.domain,
-          theme: course.theme
-        }));
+        // Mise à jour du mapping des données
+const formattedData = data.map(course => ({
+  id: course.id,
+  name: course.title,
+  category: course.category,
+  duration: course.duration,
+  trainer: course.trainer, // ✅
+  price: course.price ? parseFloat(course.price).toFixed(2) : '0.00', // ✅
+  unit: "heures",
+  registered: course.num_inscrits // ✅
+}));
         setCourses(formattedData);
         setFilteredResults(formattedData);
         setLoading(false);
       })
       .catch(error => {
-        console.error('Error:', error);
+        console.error('Erreur lors du chargement du catalogue :', error);
         setLoading(false);
       });
   }, []);
 
-  // Gestion du changement des inputs
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setSearchCriteria((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: value,
     }));
   };
 
-  // Filtrage des résultats selon les critères
   const handleSearch = () => {
     const filtered = courses.filter((course) => {
       return (
-        (searchCriteria.offer === '' || course.domain === searchCriteria.offer) &&
-        (searchCriteria.domain === '' || course.domain === searchCriteria.domain) &&
-        (searchCriteria.theme === '' || course.theme === searchCriteria.theme) &&
-        (!searchCriteria.eLearning || course.eLearning)
+        (searchCriteria.title === '' || course.name.toLowerCase().includes(searchCriteria.title.toLowerCase())) &&
+        (searchCriteria.category === '' || course.category === searchCriteria.category) &&
+        (searchCriteria.trainer === '' || course.trainer.toLowerCase().includes(searchCriteria.trainer.toLowerCase())) &&
+        (searchCriteria.maxDuration === '' || course.duration <= parseInt(searchCriteria.maxDuration)) &&
+        (searchCriteria.maxPrice === '' || parseFloat(course.price) <= parseFloat(searchCriteria.maxPrice))
       );
     });
     setFilteredResults(filtered);
+  };
+
+  const handleRegister = (courseId) => {
+    fetch(`http://localhost:8000/api/inscriptions/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem("access")}`
+      },
+      body: JSON.stringify({ formation_id: courseId }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Échec de l'inscription");
+        return res.json();
+      })
+      .then(() => {
+        setSuccessMessage("Inscription réussie !");
+        setTimeout(() => setSuccessMessage(""), 3000);
+      })
+      .catch((err) => {
+        console.error("Erreur d'inscription :", err);
+        alert("Échec de l'inscription.");
+      });
   };
 
   if (loading) {
@@ -72,46 +101,61 @@ const TrainingCatalog = () => {
       </Link>
       <h1>Catalogue de formation</h1>
 
+      {successMessage && <div className="success-message">{successMessage}</div>}
+
       <div className="search-section">
         <h2>Critères de recherche</h2>
 
         <div>
-          <label>Offre de formation</label>
-          <select name="offer" onChange={handleInputChange}>
+          <label>Nom de la formation</label>
+          <input
+            type="text"
+            name="title"
+            value={searchCriteria.title}
+            onChange={handleInputChange}
+            placeholder="Ex: Python, Leadership"
+          />
+        </div>
+
+        <div>
+          <label>Catégorie</label>
+          <select name="category" value={searchCriteria.category} onChange={handleInputChange}>
             <option value="">Toutes</option>
-            <option value="Langue">Langue</option>
-            <option value="Informatique">Informatique</option>
+            <option value="informatique">Informatique</option>
+            <option value="management">Management</option>
+            <option value="marketing">Marketing</option>
           </select>
         </div>
 
         <div>
-          <label>Domaine</label>
-          <select name="domain" onChange={handleInputChange}>
-            <option value="">Tous</option>
-            <option value="Informatique">Informatique</option>
-            <option value="Management">Management</option>
-          </select>
+          <label>Formateur</label>
+          <input
+            type="text"
+            name="trainer"
+            value={searchCriteria.trainer}
+            onChange={handleInputChange}
+            placeholder="Nom du formateur"
+          />
         </div>
 
         <div>
-          <label>Thème</label>
-          <select name="theme" onChange={handleInputChange}>
-            <option value="">Tous</option>
-            <option value="Développement">Développement</option>
-            <option value="Réseaux">Réseaux</option>
-          </select>
+          <label>Durée maximale (heures)</label>
+          <input
+            type="number"
+            name="maxDuration"
+            value={searchCriteria.maxDuration}
+            onChange={handleInputChange}
+          />
         </div>
 
         <div>
-          <label>
-            <input
-              type="checkbox"
-              name="eLearning"
-              checked={searchCriteria.eLearning}
-              onChange={handleInputChange}
-            />
-            e-Learning
-          </label>
+          <label>Prix maximum (€)</label>
+          <input
+            type="number"
+            name="maxPrice"
+            value={searchCriteria.maxPrice}
+            onChange={handleInputChange}
+          />
         </div>
 
         <button onClick={handleSearch}>RECHERCHER</button>
@@ -120,11 +164,12 @@ const TrainingCatalog = () => {
       <table className="training-table">
         <thead>
           <tr>
-            <th>Nom du stage</th>
-            <th>ID de cours</th>
+            <th>Nom</th>
+            <th>Catégorie</th>
             <th>Durée</th>
-            <th>Unité</th>
-            <th>e-Learning</th>
+            <th>Formateur</th>
+            <th>Prix (€)</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -132,17 +177,18 @@ const TrainingCatalog = () => {
             filteredResults.map((course, index) => (
               <tr key={index}>
                 <td>{course.name}</td>
-                <td>{course.id}</td>
-                <td>{course.duration}</td>
-                <td>{course.unit}</td>
+                <td>{course.category}</td>
+                <td>{course.duration} {course.unit}</td>
+                <td>{course.trainer}</td>
+                <td>{course.price}</td>
                 <td>
-                  <input type="checkbox" checked={course.eLearning} readOnly />
+                  <button onClick={() => handleRegister(course.id)}>S'inscrire</button>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="5" style={{ textAlign: 'center', color: 'gray' }}>
+              <td colSpan="6" style={{ textAlign: 'center', color: 'gray' }}>
                 Aucun résultat trouvé.
               </td>
             </tr>

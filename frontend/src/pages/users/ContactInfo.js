@@ -16,7 +16,7 @@ function ContactInfo() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/get_account_by_email', {
+        const response = await axios.get('http://127.0.0.1:8000/api/get_account_by_email/', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('access')}`
           }
@@ -50,7 +50,7 @@ function ContactInfo() {
   const handleSubmit = async () => {
     try {
       const response = await axios.post(
-        'http://127.0.0.1:8000/api/user/update/',
+        'http://127.0.0.1:8000/api/update-contact/',
         userData,
         {
           headers: {

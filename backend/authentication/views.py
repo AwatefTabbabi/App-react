@@ -106,157 +106,107 @@ def signup(request):
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
-@csrf_exempt
-def create_absence_request(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-
-            # Tu récupères l'utilisateur connecté (session Django)
-            user = request.user
-
-            # Pour les tests sans authentification, tu peux mettre un user en dur
-            if user.is_anonymous:
-                from django.contrib.auth import get_user_model
-                User = get_user_model()
-                user = User.objects.get(email="admin@example.com")  # Remplace par un email valide dans ta base
-
-            # Extraire les données envoyées par le frontend
-            absence_type = data.get('type')
-            start_date = data.get('start_date')
-            end_date = data.get('end_date')
-            starts_afternoon = data.get('starts_afternoon', False)
-            ends_afternoon = data.get('ends_afternoon', False)
-            comment = data.get('comment', '')
-
-            # Vérification de base (optionnelle mais conseillée)
-            if not absence_type or not start_date or not end_date:
-                return JsonResponse({'error': 'Champs manquants'}, status=400)
-
-            # Création de l'absence dans la base de données
-            absence = AbsenceRequest.objects.create(
-                user=user,
-                type=absence_type,
-                start_date=start_date,
-                end_date=end_date,
-                starts_afternoon=starts_afternoon,
-                ends_afternoon=ends_afternoon,
-                comment=comment,
-                status='pending'
-            )
-
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Demande d\'absence créée avec succès',
-                'absence_id': absence.id
-            }, status=201)
-
-        except Exception as e:
-            print(f"Erreur : {e}")
-            return JsonResponse({'error': str(e)}, status=400)
-
-    return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
-
-
-
-
-
-
-
 logger = logging.getLogger(__name__)
 
-@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_absence_request(request):
+    try:
+        user = request.user
+        data = request.data
+
+        absence_type = data.get('type')
+        start_date = data.get('start_date')
+        end_date = data.get('end_date')
+        starts_afternoon = data.get('starts_afternoon', False)
+        ends_afternoon = data.get('ends_afternoon', False)
+        comment = data.get('comment', '')
+
+        if not absence_type or not start_date or not end_date:
+            return JsonResponse({'error': 'Champs manquants'}, status=400)
+
+        absence = AbsenceRequest.objects.create(
+            user=user,
+            type=absence_type,
+            start_date=start_date,
+            end_date=end_date,
+            starts_afternoon=starts_afternoon,
+            ends_afternoon=ends_afternoon,
+            comment=comment,
+            status='pending'
+        )
+
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Demande d\'absence créée avec succès',
+            'absence_id': absence.id
+        }, status=201)
+
+    except Exception as e:
+        logger.error(f"Erreur create_absence_request : {e}")
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def cancel_absence(request):
-     if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
+    try:
+        user = request.user
+        data = request.data
 
-            # Tu récupères l'utilisateur connecté (session Django)
-            user = request.user
+        absence_type = data.get('type')
+        comment = data.get('comment', '')
 
-            # Pour les tests sans authentification, tu peux mettre un user en dur
-            if user.is_anonymous:
-                from django.contrib.auth import get_user_model
-                User = get_user_model()
-                user = User.objects.get(email="admin@example.com")  # Remplace par un email valide dans ta base
+        if not absence_type:
+            return JsonResponse({'error': 'Type d\'absence requis'}, status=400)
 
-            # Extraire les données envoyées par le frontend
-            absence_type = data.get('type')
-            comment = data.get('comment', '') 
+        absences = AbsenceRequest.objects.filter(user=user, type=absence_type, status='pending')
 
-            # Vérification de base (optionnelle mais conseillée)
-            if not absence_type:
-                return JsonResponse({'error': 'Type d\'absence requis'}, status=400)
+        if not absences.exists():
+            return JsonResponse({'error': 'Aucune demande trouvée'}, status=404)
 
-            logger.info(f"Utilisateur: {user.email}, Type d'absence: {absence_type}, Commentaire: {comment}")
+        updated_count = absences.update(status='cancelled', comment=comment)
 
-            # Filtrer les absences en attente pour cet utilisateur et le type spécifié
-            absences = AbsenceRequest.objects.filter(
-                user=user,
-                type=absence_type,
-                status='pending'
-            )
+        return JsonResponse({
+            'status': 'success',
+            'message': f'{updated_count} demande(s) annulée(s)',
+            'type': absence_type
+        })
 
-            if not absences.exists():
-                return JsonResponse({'error': 'Aucune demande trouvée'}, status=404)
+    except Exception as e:
+        logger.error(f"Erreur cancel_absence : {e}")
+        return JsonResponse({'error': 'Erreur serveur'}, status=500)
 
-            # Mise à jour des absences pour changer leur statut à 'cancelled'
-            updated_count = absences.update(status='cancelled', comment=comment)
 
-            return JsonResponse({
-                'status': 'success',
-                'message': f'{updated_count} demande(s) annulée(s)',
-                'type': absence_type
-            })
-
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Format JSON invalide'}, status=400)
-        except Exception as e:
-            logger.error(f"Erreur lors de l'annulation : {str(e)}")
-            return JsonResponse({'error': 'Erreur serveur'}, status=500)
-
-        return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
-@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def document_request(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
+    try:
+        user = request.user
+        data = request.data
 
-            # Récupération de l'utilisateur connecté
-            user = request.user
+        document_type = data.get('document_type')
+        comment = data.get('comment', '')
 
-            # Pour tester sans authentification, assigner un utilisateur en dur
-            if user.is_anonymous:
-                User = get_user_model()
-                user = User.objects.get(email="admin@example.com")  # Remplace par un email valide
+        if not document_type:
+            return JsonResponse({'error': 'Le type de document est requis'}, status=400)
 
-            # Extraction des données envoyées par le frontend
-            document_type = data.get('document_type')
-            comment = data.get('comment', '')
+        doc_request = DocumentRequest.objects.create(
+            user=user,
+            document_type=document_type,
+            comment=comment,
+            status='pending'
+        )
 
-            # Vérification des champs requis
-            if not document_type:
-                return JsonResponse({'error': 'Le type de document est requis'}, status=400)
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Demande de document créée avec succès',
+            'document_id': doc_request.id
+        }, status=201)
 
-            # Création de la demande de document
-            document_request = DocumentRequest.objects.create(
-                user=user,
-                document_type=document_type,
-                comment=comment,
-                status='pending'
-            )
-
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Demande de document créée avec succès',
-                'document_id': document_request.id
-            }, status=201)
-
-        except Exception as e:
-            print(f"Erreur : {e}")
-            return JsonResponse({'error': str(e)}, status=400)
-
-    return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
+    except Exception as e:
+        logger.error(f"Erreur document_request : {e}")
+        return JsonResponse({'error': str(e)}, status=400)
 @api_view(['GET'])
 def get_announcements(request):
     try:
@@ -294,6 +244,7 @@ def training_catalog(request):
         return JsonResponse(list(courses), safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+@permission_classes([IsAuthenticated]) 
 def get_absences(request):
     absences = AbsenceRequest.objects.filter(user=request.user).values(
         'id', 'type', 'start_date', 'end_date', 'status'
@@ -489,33 +440,120 @@ def catalogue_api(request):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
+    # Dans views.py (catalogue_api)
     elif request.method == 'GET':
-        # Récupération de toutes les formations
-        formations = CatalogueFormation.objects.all()
-        data = [{
-            'id': f.id,
-            'title': f.title,
-            'duration': f.duration,
-            'category': f.category
-        } for f in formations]
+        formations = CatalogueFormation.objects.annotate(
+        num_inscrits=Count('inscription')
+    )
+    data = [{
+        'id': f.id,
+        'title': f.title,
+        'description': f.description,
+        'category': f.category,
+        'duration': f.duration,
+        'start_date': f.start_date.isoformat() if f.start_date else None,
+        'price': str(f.price),
+        'trainer': f.trainer,
+        'num_inscrits': f.num_inscrits
+    } for f in formations]
         
-        return JsonResponse(data, safe=False)
+    return JsonResponse(data, safe=False)
 
     return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
 
 
 
-# views.py (fonction catalogue_drf)
 @api_view(['GET', 'POST'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def catalogue_drf(request):
-    if request.method == 'POST':
-        print("Données reçues:", request.data)  # Log des données
+    if request.method == 'GET':
+        formations = CatalogueFormation.objects.all()
+        serializer = CatalogueSerializer(formations, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
         serializer = CatalogueSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print("Erreurs de validation:", serializer.errors)  # Log des erreurs
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+from rest_framework import generics, permissions
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Inscription, CatalogueFormation
+from .serializers import InscriptionSerializer
+
+class InscriptionCreateAPIView(generics.CreateAPIView):
+    serializer_class = InscriptionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        formation_id = request.data.get('formation_id')
+        if not formation_id:
+            return Response({"error": "formation_id requis"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            formation = CatalogueFormation.objects.get(id=formation_id)
+        except CatalogueFormation.DoesNotExist:
+            return Response({"error": "Formation non trouvée"}, status=status.HTTP_404_NOT_FOUND)
+
+        inscription, created = Inscription.objects.get_or_create(
+            user=request.user,
+            formation=formation
+        )
+
+        if not created:
+            return Response({"message": "Déjà inscrit à cette formation."}, status=status.HTTP_200_OK)
+
+        serializer = self.get_serializer(inscription)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+from django.db.models import Count
+from .models import CatalogueFormation , Inscription
+
+def get_catalogue(request):
+    formations = CatalogueFormation.objects.annotate(
+        num_inscrits=Count('inscription')  # Compte le nombre d'inscriptions
+    )
+    response = [
+        {
+            'id': formation.id,
+            'title': formation.title,
+            'category': formation.category,
+            'duration': formation.duration,
+            'trainer': formation.trainer,
+            'price': formation.price,
+            'num_inscrits': formation.num_inscrits  # Ajoutez ce champ
+        }
+        for formation in formations
+    ]
+    return JsonResponse(response, safe=False)
+
+from .models import Reclamation
+from .serializers import ReclamationSerializer
+
+
+from rest_framework import generics, permissions
+
+class ReclamationCreateView(generics.CreateAPIView):
+    permission_classes = [permissions.AllowAny]  # Autoriser l'accès sans authentification
+    serializer_class = ReclamationSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    from rest_framework import generics
+from .models import Reclamation
+from .serializers import ReclamationSerializer
+from rest_framework.permissions import IsAdminUser
+
+class ReclamationListView(generics.ListAPIView):
+    queryset = Reclamation.objects.all().order_by('-created_at')
+    serializer_class = ReclamationSerializer
+    permission_classes = [IsAdminUser]  # Limité à l’admin

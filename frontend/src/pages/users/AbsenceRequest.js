@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from 'lucide-react';
@@ -13,6 +13,32 @@ function AbsenceRequest() {
   const [comment, setComment] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [userAbsences, setUserAbsences] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Récupérer les absences existantes
+  useEffect(() => {
+    const fetchAbsences = async () => {
+      const token = localStorage.getItem("access");
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/absences/mine/",
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            }
+          }
+        );
+        setUserAbsences(response.data);
+      } catch (error) {
+        console.error("Erreur de chargement des absences:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchAbsences();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +53,7 @@ function AbsenceRequest() {
       return;
     }
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("access");
     
     const absenceData = {
       type: absenceType,
@@ -46,26 +72,26 @@ function AbsenceRequest() {
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
-          },
-          withCredentials: true, // Important si tu utilises CORS_ALLOW_CREDENTIALS = True
+          }
         }
       );
 
-      console.log("Absence créée :", response.data);
+      // Mettre à jour la liste des absences
+      setUserAbsences([...userAbsences, response.data]);
       alert("Demande envoyée !");
     } catch (error) {
-      console.error("Erreur front :", error);
+      console.error("Erreur:", error);
       alert("Erreur de connexion");
     }
   };
 
-  const handleClose = () => {
-    window.location.href = "/";
+  const formatDate = (dateString) => {
+    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    return new Date(dateString).toLocaleDateString('fr-FR', options);
   };
 
   return (
     <div className="absence-request-container">
-      {/* Icône Retour */}
       <Link to="/" className="back-icon">
         <ArrowLeft size={24} />
       </Link>
@@ -75,25 +101,47 @@ function AbsenceRequest() {
       <table className="absence-request-table">
         <thead>
           <tr>
-            <th>Type d'absence</th>
-            <th>Premier jour</th>
-            <th>Part dans l'après-midi</th>
-            <th>Dernier jour</th>
-            <th>Revient dans l'après-midi</th>
+            <th>Type</th>
+            <th>Début</th>
+            <th>Début après-midi</th>
+            <th>Fin</th>
+            <th>Fin après-midi</th>
+            <th>Statut</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
+          {/* Demandes existantes */}
+          {userAbsences.map((absence) => (
+            <tr key={absence.id}>
+              <td>{absence.type}</td>
+              <td>{formatDate(absence.start_date)}</td>
+              <td>{absence.starts_afternoon ? 'Oui' : 'Non'}</td>
+              <td>{formatDate(absence.end_date)}</td>
+              <td>{absence.ends_afternoon ? 'Oui' : 'Non'}</td>
+              <td>
+                <span className={`status-badge ${absence.status?.toLowerCase()}`}>
+                  {absence.status}
+                </span>
+              </td>
+            </tr>
+          ))}
+
+          {/* Nouvelle demande (prévisualisation) */}
+          <tr className="new-request-preview">
             <td>{absenceType}</td>
             <td>{startDate || '...'}</td>
             <td>{firstDayAfternoon ? 'Oui' : 'Non'}</td>
             <td>{endDate || '...'}</td>
             <td>{lastDayAfternoon ? 'Oui' : 'Non'}</td>
+            <td>
+              <span className="status-badge pending">
+                En attente
+              </span>
+            </td>
           </tr>
         </tbody>
       </table>
-
-      <h3>Premier jour d'absence</h3>
+<h3>Premier jour d'absence</h3>
       <input
         type="date"
         value={startDate}

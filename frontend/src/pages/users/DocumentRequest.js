@@ -17,7 +17,7 @@ function DocumentRequest() {
       return;
     }
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("access");
 
     const documentData = {
       document_type: documentType,

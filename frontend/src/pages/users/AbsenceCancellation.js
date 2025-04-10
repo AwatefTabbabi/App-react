@@ -11,11 +11,8 @@ const AbsenceCancellation = () => {
     // Récupérer les demandes
     useEffect(() => {
         const fetchAbsences = async () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert("Utilisateur non authentifié !");
-                return;
-            }
+            const token = localStorage.getItem("access");
+            
 
             try {
                 const response = await fetch('http://127.0.0.1:8000/api/absences/', {
@@ -46,7 +43,8 @@ const AbsenceCancellation = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('access')}`
+
                 },
                 body: JSON.stringify({ type: selectedType, comment }),
             });

@@ -109,7 +109,7 @@ const AdminDemandes = () => {
 
   return (
     <div className="admin-container">
-      <Link to="/dashboard" className="back-link">
+      <Link to="/" className="back-link">
         <ArrowLeft size={24} />
       </Link>
 

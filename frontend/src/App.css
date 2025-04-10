@@ -22,7 +22,7 @@ main {
   background: rgb(198, 9, 9);
   color: white;
   height: 100vh;
-  width: 600px; /* Increase this value to make the sidebar wider */
+  width: 800px; /* Increase this value to make the sidebar wider */
   overflow-y: auto;
 }
 
@@ -151,5 +151,19 @@ main {
   display: block;
 }
 
+/* App.css */
+.admin-main-container {
+  display: flex;
+  min-height: calc(100vh - 60px); /* Ajuster selon la hauteur de la navbar */
+}
 
+
+
+.admin-content-wrapper {
+  flex: 1;
+  margin-left: 250px; /* Doit correspondre à la largeur de la sidebar */
+  padding: 30px;
+  background: #f8f9fa;
+  min-height: calc(100vh - 60px);
+}
 

@@ -56,17 +56,22 @@ function App() {
         <>
           <Navbar onLogout={handleLogout} />
           {role === "admin" ? (
-            <div className="admin-container">
-              <AdminSidebar />
-              <div className="admin-content">
+            <div className="admin-main-container">
+              {/* Sidebar à gauche */}
+              <div className="admin-sidebar-wrapper">
+                <AdminSidebar />
+              </div>
+              
+              {/* Contenu principal à droite */}
+              <div className="admin-content-wrapper">
                 <Routes>
-                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
                   <Route path="/catalogue" element={<Catalogue />} />
                   <Route path="/admin/absence-notifications" element={<AdminAbsenceNotification />} />
                   <Route path="/AdminDemandes" element={<AdminDemandes />} />
-                  <Route path="/AdminEmails" element={<AdminEmails />} /> 
+                  <Route path="/AdminEmails" element={<AdminEmails />} />
                   <Route path="/hr-communication" element={<HRCommunication />} />
-                  <Route path="*" element={<Navigate to="/admin/dashboard" />} /> {/* 🔹 Redirection admin */}
+                  <Route path="*" element={<Navigate to="/admin/dashboard" />} />
                 </Routes>
               </div>
             </div>

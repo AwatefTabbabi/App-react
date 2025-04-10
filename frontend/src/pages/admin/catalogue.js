@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import axios from "axios";
 import "./catalogue.css";
 
@@ -19,31 +19,55 @@ const Catalogue = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [formations, setFormations] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem("access");
-    if (!token) {
-      setError("Authentification requise");
-      navigate("/login");
-    }
-  }, [navigate]);
+    const fetchFormations = async () => {
+      try {
+        const token = localStorage.getItem("access");
+        const response = await axios.get("http://localhost:8000/api/catalogue/", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
 
+        // Formatage des données avec vérification approfondie
+        // Dans Catalogue.js
+const formatted = response.data.map(f => ({
+  id: f.id,
+  title: f.title,
+  category: f.category,
+  duration: `${f.duration}h`,
+  start_date: f.start_date,
+  trainer: f.trainer, // ✅ Maintenant présent
+  price: f.price ? `${parseFloat(f.price).toFixed(2)}€` : '0.00€',
+  registered_users: f.num_inscrits // ✅ Utilise le nom correct
+}));
 
-const handleChange = (e) => {
-  setFormData({
-    ...formData,
-    [e.target.name]: e.target.value,
-  });
-};
+        setFormations(formatted);
+      } catch (error) {
+        console.error("Erreur API:", error.response?.data);
+        setFormations([]); 
+        setError("Erreur de chargement des données");
+      }
+    };
+
+    fetchFormations();
+  }, []);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     try {
       let token = localStorage.getItem("access");
       if (!token) throw new Error("Token non trouvé");
-  
+
       // Vérifier si le token est expiré
       const decoded = jwtDecode(token);
       if (decoded.exp * 1000 < Date.now()) {
@@ -52,11 +76,11 @@ const handleChange = (e) => {
           "http://localhost:8000/api/token/refresh/",
           { refresh: refreshToken }
         );
-        
+
         token = refreshResponse.data.access;
-        localStorage.setItem("access", token); 
+        localStorage.setItem("access", token);
       }
-  
+
       // Envoyer la requête avec le nouveau token
       const response = await axios.post(
         "http://localhost:8000/api/catalogue/",
@@ -72,7 +96,7 @@ const handleChange = (e) => {
           },
         }
       );
-  
+
       alert("Formation créée !");
       navigate("/dashboard");
     } catch (error) {
@@ -88,51 +112,56 @@ const handleChange = (e) => {
     }
   };
 
-  const handleFetchError = (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("access");
-      setError("Session expirée - Veuillez vous reconnecter");
-      navigate("/login");
-    } else if (error.response?.data) {
-      // Afficher les erreurs de validation Django
-      const errors = Object.values(error.response.data).flat();
-      setError(`Erreurs: ${errors.join(", ")}`);
-    } else {
-      setError(`Erreur: ${error.message}`);
-    }
-  };
   return (
     <div className="catalogue-container">
-      <Link to="/dashboard" className="back-icon">
+      <Link to="/" className="back-icon">
         <ArrowLeft size={24} />
       </Link>
 
       <h2>Nouvelle Formation Catalogue</h2>
 
-      <table className="summary-table">
-        <thead>
-          <tr>
-            <th>Titre</th>
-            <th>Catégorie</th>
-            <th>Durée (h)</th>
-            <th>Date de début</th>
-            <th>Formateur</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{formData.title || '...'}</td>
-            <td>{formData.category || '...'}</td>
-            <td>{formData.duration || '...'}</td>
-            <td>{formData.startDate || '...'}</td>
-            <td>{formData.trainer || '...'}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div className="existing-formations">
+        <h3>Formations existantes</h3>
+        <table className="formations-table">
+          <thead>
+            <tr>
+              <th>Titre</th>
+              <th>Catégorie</th>
+              <th>Durée</th>
+              <th>Date de début</th>
+              <th>Formateur</th>
+              <th>Prix</th>
+              <th>Inscrits</th>
+            </tr>
+          </thead>
+          <tbody>
+            {formations.map((formation) => (
+              <tr key={formation.id}>
+                <td>{formation.title}</td>
+                <td>{formation.category}</td>
+                <td>{formation.duration}</td>
+                <td>
+                  {formation.start_date 
+                    ? new Date(formation.start_date).toLocaleDateString('fr-FR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                      })
+                    : 'Non défini'}
+                </td>
+                <td>{formation.trainer}</td>
+                <td>{formation.price}</td>
+                <td>{formation.registered_users}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {error && <div className="error">{error}</div>}
       {loading && <div className="loading">Enregistrement en cours...</div>}
 
+      {/* Formulaire pour ajouter une nouvelle formation */}
       <form onSubmit={handleSubmit}>
         <div className="form-section">
           <h3>Détails de la formation</h3>
@@ -169,7 +198,7 @@ const handleChange = (e) => {
 
             <div className="form-group">
               <label>Date de début :</label>
-              <input type="date" name="start_date" value={formData.startDate} onChange={handleChange} required />
+              <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} required />
             </div>
           </div>
 

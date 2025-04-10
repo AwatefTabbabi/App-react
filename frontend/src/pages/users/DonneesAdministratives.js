@@ -23,7 +23,7 @@ const DonneesAdministratives = () => {
     
             try {
                 // Correction ici : ajout de la déclaration 'response'
-                const response = await axios.get('http://localhost:8000/account/', {
+                const response = await axios.get('http://localhost:8000/api/account/', {
                     headers: { 
                         'Authorization': `Bearer ${token}`
                     }

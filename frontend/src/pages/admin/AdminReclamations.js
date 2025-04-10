@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ArrowLeft } from 'lucide-react';
 import { Link } from "react-router-dom";
 import axios from "axios";
-import "./AdminEmails.css";
+import "./AdminReclamations.css";
 
 const AdminReclamations = () => {
   const [reclamations, setReclamations] = useState([]);
@@ -40,7 +40,7 @@ const AdminReclamations = () => {
   if (error) return <div className="error">{error}</div>;
 
   return (
-    <div className="admin-reclamation-container">
+    <div className="admin-container">
       <Link to="/admin/dashboard" className="back-link">
         <ArrowLeft size={24} />
       </Link>
