@@ -5,6 +5,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import catalogue_api
 from .views import InscriptionCreateAPIView
 from .views import ReclamationCreateView, ReclamationListView
+from django.urls import path
+from authentication.views import ChatGPTAPIView
 urlpatterns = [
     # Authentification
     path('login/', views.login_view, name='login'),
@@ -33,6 +35,10 @@ urlpatterns = [
     path('trainings/', views.training_catalog, name='trainings'),
     path('api/inquiries/',views. create_inquiry, name='create_inquiry'),
     path('inscriptions/', InscriptionCreateAPIView.as_view(), name='inscription-create'),
+   
+
+    path('hf-chat/', ChatGPTAPIView.as_view(), name='hf-chat'),
+
     # JWT
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

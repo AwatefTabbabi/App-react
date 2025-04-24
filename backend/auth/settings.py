@@ -16,6 +16,12 @@ import pymysql
 pymysql.install_as_MySQLdb()
 from decouple import config
 from corsheaders.defaults import default_headers
+import openai
+from dotenv import load_dotenv
+load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
 
 SECRET_KEY = config('SECRET_KEY', default='clé_temporaire_pour_dev')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,7 +40,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['ath-service-64vx.onrender.com', '127.0.0.1', 'localhost']
 
-
+OPENROUTER_API_KEY = "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"
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
@@ -58,6 +64,7 @@ INSTALLED_APPS = [
      'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    
     
 ]
 

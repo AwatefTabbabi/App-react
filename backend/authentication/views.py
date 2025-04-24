@@ -557,3 +557,37 @@ class ReclamationListView(generics.ListAPIView):
     queryset = Reclamation.objects.all().order_by('-created_at')
     serializer_class = ReclamationSerializer
     permission_classes = [IsAdminUser]  # Limité à l’admin
+
+import requests
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from django.conf import settings
+
+class ChatGPTAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        user_message = request.data.get('message', '')
+        if not user_message:
+            return Response({"error": "Message is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            headers = {
+                "Authorization": f"Bearer {settings.OPENROUTER_API_KEY}",
+                "Content-Type": "application/json"
+            }
+            data = {
+                "model": "openai/gpt-3.5-turbo",  # ou try yiyaneko/yi-34b ou mistralai/mistral-7b-instruct
+                "messages": [
+                    {"role": "system", "content": "Tu es un assistant RH de l'ATB."},
+                    {"role": "user", "content": user_message}
+                ]
+            }
+            response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=data)
+            response.raise_for_status()
+            reply = response.json()["choices"][0]["message"]["content"]
+            return Response({"response": reply})
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

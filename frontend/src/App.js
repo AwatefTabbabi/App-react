@@ -17,6 +17,7 @@ import DonneesAdministratives from "./pages/users/DonneesAdministratives";
 import DocumentRequest from "./pages/users/DocumentRequest";
 import AbsenceCancellation from "./pages/users/AbsenceCancellation";
 import Settings from "./pages/users/settings";
+import ChatBotComponent from "./components/ChatBotComponent";
 
 // Pages admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -55,6 +56,7 @@ function App() {
       ) : isAuthenticated ? (
         <>
           <Navbar onLogout={handleLogout} />
+          <ChatBotComponent /> 
           {role === "admin" ? (
             <div className="admin-main-container">
               {/* Sidebar à gauche */}
@@ -65,7 +67,7 @@ function App() {
               {/* Contenu principal à droite */}
               <div className="admin-content-wrapper">
                 <Routes>
-                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                  <Route path="/admin" element={<AdminDashboard />} />
                   <Route path="/catalogue" element={<Catalogue />} />
                   <Route path="/admin/absence-notifications" element={<AdminAbsenceNotification />} />
                   <Route path="/AdminDemandes" element={<AdminDemandes />} />
