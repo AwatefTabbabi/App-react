@@ -19,10 +19,7 @@ const AbsenceCancellation = () => {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
-                if (!response.ok) throw new Error("Erreur lors du chargement des absences");
-
-                const data = await response.json();
-                setAbsences(data.filter(a => a.status === 'pending'));
+                
             } catch (error) {
                 alert(error.message);
             }
