@@ -1,14 +1,14 @@
 pipeline {
-    
-        agent any // Agent Windows obligatoire
-    
+    agent any
 
     environment {
         IMAGE_NAME = 'react-frontend'
         CONTAINER_NAME = 'react_frontend'
+        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 echo '📦 Clonage du dépôt...'
@@ -17,11 +17,11 @@ pipeline {
         }
 
         stage('Install dependencies') {
-            steps {
-                echo '📦 Installation des dépendances...'
-                bat 'npm install' // Commande Windows
-            }
-        }
+  steps {
+    bat 'npm config set proxy http://proxy.example.com:8080'
+    bat 'npm install'
+  }
+}
 
         stage('Build React app') {
             steps {
@@ -31,20 +31,18 @@ pipeline {
         }
 
         stage('Build Docker image') {
-            steps {
-                echo '🐳 Construction de l’image Docker...'
-                dir('frontend') {
-                    bat "docker build -t ${IMAGE_NAME} ."
-                }
-            }
-        }
-
+  steps {
+    dir('frontend') {
+      bat "docker build -t ${IMAGE_NAME} ."
+    }
+  }
+}
         stage('Stop and remove old container') {
             steps {
                 echo '🧹 Nettoyage de l’ancien conteneur...'
                 bat """
-                    docker stop ${CONTAINER_NAME} || echo OK
-                    docker rm ${CONTAINER_NAME} || echo OK
+                    docker stop ${CONTAINER_NAME} || true
+                    docker rm ${CONTAINER_NAME} || true
                 """
             }
         }
@@ -52,9 +50,7 @@ pipeline {
         stage('Run Docker container') {
             steps {
                 echo '🚀 Lancement du nouveau conteneur...'
-                dir('frontend') {
-                    bat "docker run -d --name ${CONTAINER_NAME} -p 3000:3000 ${IMAGE_NAME}"
-                }
+                bat "docker run -d --name ${CONTAINER_NAME} -p 3000:3000 ${IMAGE_NAME}"
             }
         }
     }
