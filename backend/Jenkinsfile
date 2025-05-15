@@ -1,0 +1,72 @@
+pipeline {
+    agent any
+
+    environment {
+        COMPOSE_FILE = 'docker-compose.yml'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                echo '📦 Clonage du dépôt...'
+                checkout scm
+            }
+        }
+
+        stage('Build Docker containers') {
+            steps {
+                echo '🐳 Construction des conteneurs Docker...'
+                sh "docker-compose -f ${COMPOSE_FILE} build"
+            }
+        }
+
+        stage('Run containers') {
+            steps {
+                echo '🚀 Lancement des conteneurs Docker...'
+                sh "docker-compose -f ${COMPOSE_FILE} up -d"
+            }
+        }
+
+        stage('Wait for DB & Run migrations') {
+            steps {
+                echo '🛠️ Attente de la base de données & migration Django...'
+                sh """
+                    sleep 10
+                    docker exec django_web python manage.py makemigrations
+                    docker exec django_web python manage.py migrate
+                """
+            }
+        }
+
+        stage('Collect static files') {
+            steps {
+                echo '📂 Collecte des fichiers statiques...'
+                sh "docker exec django_web python manage.py collectstatic --noinput"
+            }
+        }
+
+        stage('Superuser (optionnel)') {
+            steps {
+                echo '👤 Création du superutilisateur (si scripté)...'
+                // Tu peux ajouter ici une commande pour créer un superutilisateur automatiquement
+                // Exemple :
+                // sh "docker exec django_web python manage.py shell < create_superuser.py"
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Backend Django déployé avec succès !'
+        }
+        failure {
+            echo '❌ Échec du pipeline Django.'
+            sh "docker-compose -f ${COMPOSE_FILE} logs"
+        }
+        cleanup {
+            echo '🧹 Nettoyage si nécessaire...'
+            // Exemple : sh "docker system prune -f"
+        }
+    }
+}

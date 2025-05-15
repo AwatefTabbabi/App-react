@@ -359,8 +359,8 @@ def update_absence_status(request, id):
             
         absence.status = new_status
         absence.save()
-        
-        return Response({"message": "Statut mis à jour"}, status=200)
+        serializer = AbsenceRequestSerializer(absence)  # <-- Ajoutez ceci
+        return Response(serializer.data, status=200)
     
     except AbsenceRequest.DoesNotExist:
         return Response({"error": "Demande introuvable"}, status=404)

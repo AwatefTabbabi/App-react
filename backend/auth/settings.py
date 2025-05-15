@@ -12,11 +12,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
-import pymysql
-pymysql.install_as_MySQLdb()
+#import pymysql
+#pymysql.install_as_MySQLdb()
 from decouple import config
-from corsheaders.defaults import default_headers
-import openai
+#from corsheaders.defaults import default_headers
+#import openai
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -149,8 +149,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',  # Utilisez 'mysql' comme moteur de base de données
         'NAME': 'django_db',                  # Nom de la base de données
         'USER': 'root',                       # Nom d'utilisateur MySQL
-        'PASSWORD': '',                       # Mot de passe MySQL (laissez vide si aucun)
-        'HOST': 'localhost',                  # Adresse du serveur MySQL
+        'PASSWORD': 'root',                       # Mot de passe MySQL (laissez vide si aucun)
+        'HOST': 'db',                  # Adresse du serveur MySQL
         'PORT': '3306',                       # Port MySQL (par défaut 3306)
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",  # Syntaxe corrigée

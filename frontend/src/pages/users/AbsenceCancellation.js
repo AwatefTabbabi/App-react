@@ -15,7 +15,7 @@ const AbsenceCancellation = () => {
             
 
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/absences/', {
+                const response = await fetch('http://localhost:8000/api/absences/', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -36,7 +36,7 @@ const AbsenceCancellation = () => {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/absences/cancel/', {
+            const response = await fetch('http://localhost:8000/api/absences/cancel/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

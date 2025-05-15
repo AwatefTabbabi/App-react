@@ -1,111 +1,111 @@
 /* Conteneur principal */
 .document-request {
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 800px;
-    margin: 40px auto;
-    background: white;
-    padding: 40px;
-    border-radius: 100px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  margin: 40px auto;
+  background: white;
+  padding: 40px;
+  border-radius: 100px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Titre */
 .document-request h2 {
-    text-align: center;
-    color: #003366;
-    font-size: 22px;
-    margin-bottom: 20px;
+  text-align: center;
+  color: #003366;
+  font-size: 22px;
+  margin-bottom: 20px;
 }
 
 /* Formulaire */
 .form-group {
-    text-align: left;
-    margin-bottom: 15px;
+  text-align: left;
+  margin-bottom: 15px;
 }
 
 .form-group label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #003366;
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #003366;
 }
 
 .required {
-    color: red;
-    font-weight: bold;
+  color: red;
+  font-weight: bold;
 }
 
 /* Champs de formulaire */
 .document-request select,
 .document-request textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
 }
 
 .document-request textarea {
-    height: 80px;
-    resize: none;
+  height: 80px;
+  resize: none;
 }
 
 /* Bouton */
 .document-request button {
-    width: 100%;
-    background-color: #003366;
-    color: white;
-    border: none;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background 0.3s;
+  width: 100%;
+  background-color: #003366;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s;
 }
 
 .document-request button:hover {
-    background-color: #0055aa;
+  background-color: #0055aa;
 }
 
 /* Statut de la demande */
 .status {
-    margin-top: 20px;
-    font-size: 16px;
-    padding: 10px;
-    border-radius: 5px;
-    display: inline-block;
-    text-align: center; /* Centre le texte à l'intérieur du bloc */
-    margin: 10px auto; /* Centre le bloc horizontalement */
-    width: 50%; /* Optionnel, pour limiter la largeur du bloc */
+  margin-top: 20px;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 5px;
+  display: inline-block;
+  text-align: center; /* Centre le texte à l'intérieur du bloc */
+  margin: 10px auto; /* Centre le bloc horizontalement */
+  width: 50%; /* Optionnel, pour limiter la largeur du bloc */
 }
 
 .status.pending {
-    color: #cc8800;
-    background: #fff3cd;
-    border: 1px solid #ffeeba;
+  color: #cc8800;
+  background: #fff3cd;
+  border: 1px solid #ffeeba;
 }
 
 .status.accepted {
-    color: #0f5132;
-    background: #d1e7dd;
-    border: 1px solid #badbcc;
+  color: #0f5132;
+  background: #d1e7dd;
+  border: 1px solid #badbcc;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .document-request {
-        width: 90%;
-        padding: 20px;
-    }
+  .document-request {
+      width: 90%;
+      padding: 20px;
+  }
 
-    .document-request select,
-    .document-request textarea {
-        font-size: 14px;
-    }
+  .document-request select,
+  .document-request textarea {
+      font-size: 14px;
+  }
 }

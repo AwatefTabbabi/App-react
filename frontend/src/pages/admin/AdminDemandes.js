@@ -75,6 +75,7 @@ const AdminDemandes = () => {
       );
 
       updateLocalState(type, id, newStatus);
+      setDemandes(prev => ({ ...prev, stats: { ...prev.stats, pending: prev.stats.pending - 1 }}));
     } catch (error) {
       console.error("Erreur de mise à jour:", error);
     }

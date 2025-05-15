@@ -67,7 +67,7 @@ const DonneesAdministratives = () => {
             
             <div className="cv-header">
                 <img
-                    src={data.photo ? `http://127.0.0.1:8000${data.photo}` : 'https://via.placeholder.com/100'}
+                    src={data.photo ? `http://localhost:8000${data.photo}` : 'https://via.placeholder.com/100'}
                     alt="Photo Employé"
                     className="profile-pic"
                 />

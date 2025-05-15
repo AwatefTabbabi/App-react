@@ -8,3 +8,11 @@ python-decouple==3.8
 sqlparse==0.5.3
 typing_extensions==4.12.2
 whitenoise==6.8.2
+pymysql
+django-cors-headers>=4.0.0
+python-dotenv
+djangorestframework
+djangorestframework-simplejwt
+mysqlclient
+requests
+Pillow

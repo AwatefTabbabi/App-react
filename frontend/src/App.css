@@ -25,7 +25,16 @@ main {
   width: 800px; /* Increase this value to make the sidebar wider */
   overflow-y: auto;
 }
-
+.header-red {
+  background: #d32f2f;
+  color: #fff;
+  padding: 18px 0 18px 30px;
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+  margin-bottom: 30px;
+}
 .top_section {
   display: flex;
   align-items: center;
