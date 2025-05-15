@@ -17,14 +17,14 @@ pipeline {
         stage('Build Docker containers') {
             steps {
                 echo '🐳 Construction des conteneurs Docker...'
-                bat "docker-compose -f ${COMPOSE_FILE}"
+                bat "docker-compose build"
             }
         }
 
         stage('Run containers') {
             steps {
                 echo '🚀 Lancement des conteneurs Docker...'
-                bat "docker-compose -f ${COMPOSE_FILE} up -d"
+                bat "docker-compose up -d"
             }
         }
 
