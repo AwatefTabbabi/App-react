@@ -1,7 +1,7 @@
 pipeline {
-    agent {
-        label 'windows' // Agent Windows obligatoire
-    }
+    
+        agent any // Agent Windows obligatoire
+    
 
     environment {
         IMAGE_NAME = 'react-frontend'
