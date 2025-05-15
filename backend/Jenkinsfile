@@ -16,33 +16,41 @@ pipeline {
 
         stage('Build Docker containers') {
             steps {
+                 dir('backend') { 
                 echo '🐳 Construction des conteneurs Docker...'
                 bat "docker-compose build"
+                 }
             }
         }
 
         stage('Run containers') {
             steps {
+                 dir('backend') { 
                 echo '🚀 Lancement des conteneurs Docker...'
                 bat "docker-compose up -d"
+                 }
             }
         }
 
         stage('Wait for DB & Run migrations') {
             steps {
+                 dir('backend') { 
                 echo '🛠️ Attente de la base de données & migration Django...'
                 bat """
                     sleep 10
                     docker exec django_web python manage.py makemigrations
                     docker exec django_web python manage.py migrate
                 """
+                 }
             }
         }
 
         stage('Collect static files') {
             steps {
+                 dir('backend') { 
                 echo '📂 Collecte des fichiers statiques...'
                 bat "docker exec django_web python manage.py collectstatic --noinput"
+                 }
             }
         }
 
@@ -61,8 +69,10 @@ pipeline {
             echo '✅ Backend Django déployé avec succès !'
         }
         failure {
+             dir('backend') { 
             echo '❌ Échec du pipeline Django.'
             bat "docker-compose -f ${COMPOSE_FILE} logs"
+             }
         }
         cleanup {
             echo '🧹 Nettoyage si nécessaire...'
