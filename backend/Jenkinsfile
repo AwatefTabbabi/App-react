@@ -44,24 +44,6 @@ pipeline {
                  }
             }
         }
-
-        stage('Collect static files') {
-            steps {
-                 dir('backend') { 
-                echo '📂 Collecte des fichiers statiques...'
-                bat "docker exec django_web python manage.py collectstatic --noinput"
-                 }
-            }
-        }
-
-        stage('Superuser (optionnel)') {
-            steps {
-                echo '👤 Création du superutilisateur (si scripté)...'
-                // Tu peux ajouter ici une commande pour créer un superutilisateur automatiquement
-                // Exemple :
-                // bat "docker exec django_web python manage.py batell < create_superuser.py"
-            }
-        }
     }
 
     post {
