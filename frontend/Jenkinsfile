@@ -4,7 +4,6 @@ pipeline {
     environment {
         IMAGE_NAME = 'react-frontend'
         CONTAINER_NAME = 'react_frontend'
-        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
     }
 
     stages {
@@ -17,40 +16,43 @@ pipeline {
         }
 
         stage('Install dependencies') {
-  steps {
-    bat 'npm config set proxy http://proxy.example.com:8080'
-    bat 'npm install'
-  }
-}
+            steps {
+                dir('frontend') { // ✅ Navigue vers le dossier frontend
+                    bat 'npm install' 
+                }
+            }
+        }
 
         stage('Build React app') {
             steps {
-                echo '🛠️ Construction de l’application React...'
-                bat 'npm run build'
+                dir('frontend') { // ✅ Navigue vers le dossier frontend
+                    bat 'npm run build'
+                }
             }
         }
 
         stage('Build Docker image') {
-  steps {
-    dir('frontend') {
-      bat "docker build -t ${IMAGE_NAME} ."
-    }
-  }
-}
+            steps {
+                dir('frontend') {
+                    bat "docker build -t ${IMAGE_NAME} ."
+                }
+            }
+        }
+
         stage('Stop and remove old container') {
             steps {
-                echo '🧹 Nettoyage de l’ancien conteneur...'
                 bat """
-                    docker stop ${CONTAINER_NAME} || true
-                    docker rm ${CONTAINER_NAME} || true
+                    docker stop ${CONTAINER_NAME} || echo OK
+                    docker rm ${CONTAINER_NAME} || echo OK
                 """
             }
         }
 
         stage('Run Docker container') {
             steps {
-                echo '🚀 Lancement du nouveau conteneur...'
-                bat "docker run -d --name ${CONTAINER_NAME} -p 3000:3000 ${IMAGE_NAME}"
+                dir('frontend') { // ✅ Si nécessaire selon la config Docker
+                    bat "docker run -d --name ${CONTAINER_NAME} -p 3000:3000 ${IMAGE_NAME}"
+                }
             }
         }
     }
