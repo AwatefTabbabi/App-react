@@ -82,7 +82,7 @@ const formatted = response.data.map(f => ({
       }
 
       // Envoyer la requête avec le nouveau token
-      const response = await axios.post(
+      /*const response = await axios.post(
         "http://localhost:8000/api/catalogue/",
         {
           ...formData,
@@ -96,7 +96,7 @@ const formatted = response.data.map(f => ({
           },
         }
       );
-
+*/
       alert("Formation créée !");
       navigate("/dashboard");
     } catch (error) {

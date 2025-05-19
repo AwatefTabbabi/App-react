@@ -89,7 +89,7 @@ const AdminDemandes = () => {
       );
 
       const pendingCount = updatedRequests.filter(r => r.status === 'pending').length;
-      const otherKey = key === 'absences' ? 'documents' : 'absences';
+      
       const totalPending = pendingCount + prev.stats.pending - prev[key].filter(r => r.id === id && r.status === 'pending').length;
 
       return {
