@@ -9,7 +9,7 @@ const Login = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const {  } = useContext(AuthContext);
+  const { user } = props;
 
   const handleSubmit = async (e) => {
     e.preventDefault();

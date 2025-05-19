@@ -18,7 +18,7 @@ const AbsenceCancellation = () => {
                 const response = await fetch('http://localhost:8000/api/absences/', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-
+          console.log(response.data);
                 
             } catch (error) {
                 alert(error.message);

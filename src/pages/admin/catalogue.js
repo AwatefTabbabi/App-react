@@ -28,7 +28,7 @@ const Catalogue = () => {
         const response = await axios.get("http://localhost:8000/api/catalogue/", {
           headers: { Authorization: `Bearer ${token}` }
         });
-
+        console.log(response.data);
         // Formatage des données avec vérification approfondie
         // Dans Catalogue.js
 const formatted = response.data.map(f => ({

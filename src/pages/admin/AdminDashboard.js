@@ -4,7 +4,7 @@ const AdminDashboard = () => {
   
 
   return (
-    <img  />
+    <img  alt=""/>
   );
 };
 

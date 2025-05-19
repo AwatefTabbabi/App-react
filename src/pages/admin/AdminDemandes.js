@@ -28,7 +28,7 @@ const AdminDemandes = () => {
             'Authorization': `Bearer ${token}`
           }
         });
-
+        console.log(response.data);
         const pendingAbs = response.data.absences?.filter(a => a.status === 'pending').length || 0;
         const pendingDocs = response.data.documents?.filter(d => d.status === 'pending').length || 0;
 

@@ -42,7 +42,7 @@ const Settings = () => {
         formData.append("file", data.file[0]);
       }
 
-      const token = localStorage.getItem('access_token'); // Récupérer le token stocké
+      const token = localStorage.getItem("access");// Récupérer le token stocké
 
 // La requête reste inchangée (sans header Authorization)
 const response = await axios.post(
