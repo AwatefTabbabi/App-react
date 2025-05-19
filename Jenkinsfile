@@ -33,8 +33,7 @@ pipeline {
         stage('Build React app') {
             steps {
                 
-                    bat 'CI='' npm run build
-'
+                    bat 'CI='' npm run build'
                 
             }
         }
