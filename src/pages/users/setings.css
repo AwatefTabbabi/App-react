@@ -1,0 +1,157 @@
+/* Conteneur principal des paramètres */
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Titre principal des paramètres */
+.settings-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #003366;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Message de succès */
+.success-message {
+  background-color: #d4edda;
+  border-left: 4px solid #155724;
+  color: #155724;
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.success-message .icon {
+  margin-right: 10px;
+}
+
+/* Formulaire des paramètres */
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Champs de formulaire (input, select, textarea) */
+.settings-form input,
+.settings-form select,
+.settings-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.settings-form input:focus,
+.settings-form select:focus,
+.settings-form textarea:focus {
+  border-color: #003366;
+  box-shadow: 0 0 5px rgba(0, 51, 102, 0.5);
+}
+
+/* Labels */
+.settings-form label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+/* Erreurs */
+.settings-form .error-message {
+  color: #f44336;
+  font-size: 0.875rem;
+  margin-top: 5px;
+}
+
+/* Bouton de soumission */
+.submit-button {
+  background-color: #007bff;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+/* Section de retour */
+.back-link {
+  margin-top: 20px;
+  color: #003366;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.back-link:hover {
+  color: #002244;
+}
+
+/* Section de notifications */
+.notifications {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.notification-text {
+  font-size: 1rem;
+  color: #333;
+}
+
+.notification-status {
+  font-size: 0.875rem;
+  font-weight: bold;
+}
+
+.notification-status.active {
+  color: #4CAF50;
+}
+
+.notification-status.inactive {
+  color: #f44336;
+}
+
+/* Réactive */
+@media (max-width: 768px) {
+  .settings-container {
+      padding: 1.5rem;
+  }
+
+  .submit-button {
+      width: 100%;
+  }
+}

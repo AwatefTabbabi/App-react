@@ -1,0 +1,119 @@
+/* DonneesAdministratives.css */
+
+.container {
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Déplace le conteneur de 50% de sa propre taille */
+  width: 800px;
+  margin: 40px auto;
+  background: white;
+  padding: 40px;
+  border-radius: 100px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* En-tête CV */
+.cv-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 3px solid #2c3e50;
+}
+
+.profile-pic {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #2c3e50;
+  margin-right: 2rem;
+}
+
+/* Section principale */
+.profile {
+  flex-grow: 1;
+}
+
+.profile h2 {
+  color: #2c3e50;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.8em;
+}
+
+/* Sections du CV */
+.cv-section {
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.cv-section h2 {
+  color: #34495e;
+  font-size: 1.4em;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+/* Grille d'informations */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.info-item {
+  margin: 0.5rem 0;
+}
+
+.info-item strong {
+  color: #2c3e50;
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.9em;
+}
+
+.info-item span {
+  color: #7f8c8d;
+  font-size: 1em;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .cv-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-pic {
+    margin: 0 0 1rem 0;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Bouton retour */
+.container a {
+  color: #2c3e50;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.container a svg {
+  margin-right: 0.5rem;
+}

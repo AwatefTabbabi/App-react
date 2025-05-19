@@ -1,0 +1,130 @@
+/* Conteneur principal centré */
+.absence-request-container {
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Déplace le conteneur de 50% de sa propre taille */
+    width: 800px;
+    margin: 140px auto;
+    background: white;
+    padding: 40px;
+    border-radius: 100px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Titre */
+  .absence-request-container h2,
+  .absence-request-container h3 {
+    text-align: center;
+    color: #003366;
+  }
+  
+  /* Barre de sélection */
+  .absence-request-container select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  /* Boutons */
+  .absence-request-container button {
+    background-color:#003366;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+  }
+  
+  .absence-request-container button:hover {
+    background-color: #0055aa;
+  }
+  
+  /* Table */
+  .absence-request-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .absence-request-table th,
+  .absence-request-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .absence-request-table th {
+    background-color: #003366;
+    color: white;
+  }
+  
+  /* Champ de commentaire */
+  .comment-textarea {
+    width: 100%;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .absence-request-container {
+      width: 90%;
+      padding: 15px;
+    }
+  
+    .absence-request-table th,
+    .absence-request-table td {
+      padding: 8px;
+      font-size: 14px;
+    }
+  }
+  .absence-request-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+  }
+  
+  .absence-request-table th {
+    background-color: #003366;
+    color: white;
+    padding: 12px;
+    text-align: left;
+  }
+  
+  .absence-request-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .new-request-preview {
+    background-color: #f8f9fa;
+  }
+  
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+  }
+  
+  .status-badge.pending {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+  
+  .status-badge.approuvée {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .status-badge.refusée {
+    background-color: #f8d7da;
+    color: #721c24;
+  }

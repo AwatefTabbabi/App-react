@@ -1,0 +1,113 @@
+/* Conteneur principal centré */
+.absence-cancellation {
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    margin: 40px auto;
+    background: white;
+    padding: 60px;
+    border-radius: 100px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Titre */
+.absence-cancellation h1 {
+    text-align: center;
+    color: #003366;
+}
+
+/* Groupe de formulaire */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #003366;
+}
+
+/* Sélecteur */
+.absence-cancellation select,
+.absence-cancellation textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Bouton */
+.absence-cancellation button {
+    display: block;
+    width: 100%;
+    background-color: #003366;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.absence-cancellation button:hover {
+    background-color: #0055aa;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .absence-cancellation {
+        width: 90%;
+        padding: 20px;
+        border-radius: 50px;
+    }
+
+    .absence-cancellation select,
+    .absence-cancellation textarea {
+        font-size: 14px;
+    }
+}
+.absence-item {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+.pending { background-color: #fff3cd; }
+.cancelled { background-color: #f8d7da; text-decoration: line-through; }
+.absence-item.pending {
+    background-color: #fff7e6;
+  }
+  
+  .absence-item.approved {
+    background-color: #e6ffed;
+  }
+  
+  .absence-item.rejected {
+    background-color: #ffe6e6;
+  }
+  
+  .absence-item.cancelled {
+    background-color: #f0f0f0;
+    color: #999;
+    text-decoration: line-through;
+  }
+  
+  .status {
+    margin-left: 10px;
+    font-weight: bold;
+  }
+  
+  .absence-comment {
+    font-size: 0.9em;
+    color: #555;
+    margin-top: 5px;
+  }
+  

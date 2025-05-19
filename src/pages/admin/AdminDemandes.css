@@ -1,0 +1,257 @@
+/* Conteneur principal */
+.admin-container {
+  position: relative;
+  width: 90%;
+  margin: 2rem auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  
+  
+  /* Titre principal */
+  .admin-demandes-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #003366;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Barre de recherche */
+  .search-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .search-icon {
+    color: #6c757d;
+    margin-right: 10px;
+  }
+  
+  .search-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 1rem;
+    outline: none;
+  }
+  
+  .search-input:focus {
+    border-color: #003366;
+    box-shadow: 0 0 5px rgba(0, 51, 102, 0.5);
+  }
+  
+  /* Sections de demandes */
+  .demandes-section {
+    margin-bottom: 30px;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #003366;
+    margin-bottom: 15px;
+  }
+  
+  /* Tableau */
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  .demandes-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  
+  .table-header th {
+    background-color: #003366;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    cursor: pointer;
+  }
+  
+  .table-header th:hover {
+    background-color: #002244;
+  }
+  
+  .table-row {
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .table-row:hover {
+    background-color: #f1f5f9;
+  }
+  
+  .table-row td {
+    padding: 12px;
+    color: #333;
+  }
+  
+  /* Badge de statut */
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: bold;
+  }
+  
+  .status-badge.en-attente {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+  
+  .status-badge.approuvée {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .status-badge.refusée {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  
+  /* Icône de tri */
+  .sort-icon {
+    margin-left: 5px;
+    font-size: 14px;
+  }
+  
+  .sort-icon.asc::after {
+    content: " ▲";
+  }
+  
+  .sort-icon.desc::after {
+    content: " ▼";
+  }
+  
+  /* Icône de retour */
+  .back-icon {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    color: #003366;
+    text-decoration: none;
+  }
+  
+  .back-icon:hover {
+    color: #002244;
+  }
+  .admin-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.back-link {
+    color: #333;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.main-title {
+    color: #2c3e50;
+    margin-bottom: 2rem;
+}
+
+.stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.requests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 1rem 0;
+}
+
+.request-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.request-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.status-badge.pending { background: #fff3cd; color: #856404; }
+.status-badge.approved { background: #d4edda; color: #155724; }
+.status-badge.rejected { background: #f8d7da; color: #721c24; }
+
+.employee {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.request-body p {
+    margin: 0.5rem 0;
+    color: #666;
+}
+
+.loading, .error {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.2rem;
+}
+/* AdminDemandes.css */
+.action-buttons {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-approve {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-reject {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.status-text {
+  padding: 0.3rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+.status-text.approved { background: #d4edda; color: #155724; }
+.status-text.rejected { background: #f8d7da; color: #721c24; }
+.status-text.pending { background: #fff3cd; color: #856404; }
