@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: django_db
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init:/docker-entrypoint-initdb.d
+
+  web:
+    build: .
+    tty: true
+    container_name: django_web
+    command: >
+      sh -c "
+        export PYTHONUNBUFFERED=1 &&
+        until mysqladmin ping -h db -u root -p'root' --silent; do
+          echo '⏳ Waiting for MySQL to be ready...';
+          sleep 2;
+        done &&
+        echo '✅ MySQL is ready. Starting Django...' &&
+        python ./manage.py runserver 0.0.0.0:8000
+      "
+
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DB_NAME: django_db
+      DB_USER: root
+      DB_PASSWORD: ''
+      DB_HOST: db
+      DB_PORT: 3306
+
+volumes:
+  mysql_data:
