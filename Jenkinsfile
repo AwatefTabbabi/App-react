@@ -22,27 +22,27 @@ pipeline {
 
         stage('Install dependencies') {
             steps {
-                dir('frontend') {
+              
                     bat 'npm cache clean --force'
                     bat 'npm install react-scripts --save' // Installation explicite
                     bat 'npm install'
-                }
+                
             }
         }
 
         stage('Build React app') {
             steps {
-                dir('frontend') {
+                
                     bat 'npm run build'
-                }
+                
             }
         }
 
         stage('Build Docker image') {
             steps {
-                dir('frontend') {
+               
                     bat "docker build -t ${IMAGE_NAME} ."
-                }
+                
             }
         }
 
