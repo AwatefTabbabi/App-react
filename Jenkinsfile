@@ -4,6 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = 'react-frontend'
         CONTAINER_NAME = 'react_frontend'
+        CI = ''
     }
 
     stages {
