@@ -1,7 +1,6 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
-import { AuthContext,props } from "../context/AuthContext";
 import axios from "axios";
 
 const Login = ({ onLogin }) => {
@@ -9,7 +8,6 @@ const Login = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { user } = props;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
