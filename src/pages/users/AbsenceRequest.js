@@ -45,7 +45,7 @@ function AbsenceRequest() {
       }
     };
     fetchAbsences();
-  }, [refreshCounter]);
+  }, [refreshCounter,setLoading]);
 
   const fetchAbsences = async () => {
       const token = localStorage.getItem("access");
