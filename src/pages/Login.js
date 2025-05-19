@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext,props } from "../context/AuthContext";
 import axios from "axios";
 
 const Login = ({ onLogin }) => {
