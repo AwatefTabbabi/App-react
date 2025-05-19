@@ -16,3 +16,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
 COPY . .
+# Dockerfile
+RUN pip install twilio django-cors-headers

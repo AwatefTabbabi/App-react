@@ -21,7 +21,8 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = 'email'  # Assurez-vous que l'email est utilisé pour l'authentification
     REQUIRED_FIELDS = ['email']
     email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=15)
+    phone = models.CharField(max_length=15, unique=True)
+
     login = models.CharField(max_length=200)
     date_creation = models.DateTimeField("date creation", auto_now_add=True)
     identifier = models.CharField(max_length=200, blank=True, null=True)
@@ -99,16 +100,13 @@ class DocumentRequest(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='En cours')
     created_at = models.DateTimeField(auto_now_add=True)
 class HRAnnouncement(models.Model):
-    title = models.CharField(max_length=200)
-    content = models.TextField()
-    date = models.DateField()
-    created_at = models.DateTimeField(auto_now_add=True)
     file = models.FileField(
         upload_to='announcements/files/',
         blank=True,
         null=True,
         verbose_name="Fichier joint"
     )
+    # ... autres champs
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):

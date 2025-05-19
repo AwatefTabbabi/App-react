@@ -22,7 +22,8 @@ class UserInquirySerializer(serializers.ModelSerializer):
         fields = '__all__'
 class HRAnnouncementSerializer(serializers.ModelSerializer):
     author_name = serializers.CharField(source='author.login', read_only=True)
-    
+    file = serializers.FileField(use_url=True) # Générer une URL complète
+
     class Meta:
         model = HRAnnouncement
         fields = '__all__'

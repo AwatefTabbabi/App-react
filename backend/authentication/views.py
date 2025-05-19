@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
-from .models import User
+from authentication.models import User
 from django.db import IntegrityError
 from django.contrib.auth import get_user_model
 from .models import AbsenceRequest, DocumentRequest, HRAnnouncement, TrainingCourse
@@ -11,6 +11,9 @@ import json
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import AllowAny
+
 import json
 import logging
 from rest_framework.response import Response
@@ -20,6 +23,7 @@ from .models import AbsenceRequest
 # views.py
 from .models import HRAnnouncement  
 logger = logging.getLogger(__name__)
+
 @csrf_exempt
 def login_view(request):
     if request.method == 'POST':
@@ -29,14 +33,22 @@ def login_view(request):
             email = data.get('email')
             password = data.get('password')
 
+
             # Authentifier l'utilisateur
             user = authenticate(request, username=email, password=password)
             if user is not None:
                 login(request, user)
+
+                # Générer les tokens d'accès et de rafraîchissement
+                refresh = RefreshToken.for_user(user)
+                access_token = str(refresh.access_token)
+                refresh_token = str(refresh)
+
                 return JsonResponse({
-                    'status': 'success',
                     'message': 'Logged in successfully',
-                    'role': 'admin' if user.is_staff else 'user' # Utilisez is_superuser
+                    'role': 'admin' if user.is_staff else 'user', # Utilisez is_superuser
+                    'access':access_token,
+                    'refresh':refresh_token
                 })
             else:
                 return JsonResponse({'status': 'error', 'message': 'Invalid credentials'}, status=400)
@@ -105,6 +117,60 @@ def signup(request):
             return JsonResponse({'error': str(e)}, status=400)
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+@api_view(['POST'])
+@permission_classes([AllowAny])
+@authentication_classes([])
+def forgot_password(request):
+    email = request.data.get('email').strip().lower()
+
+    if not email:
+        return Response({"error": "Email requis."}, status=400)
+
+    try:
+        user = User.objects.get(email=email)
+
+        token = PasswordResetTokenGenerator().make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        reset_link = request.build_absolute_uri(
+            reverse('reset-password', kwargs={'uidb64': uid, 'token': token})
+        )
+        send_mail(
+            'Reset Your Password',
+            f'Click the link to reset your password: {reset_link}',
+            'tabbabiawatef27@gmail.com',
+            [email],
+        )
+        return Response({'message': 'Reset email sent.'}, status=status.HTTP_200_OK)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+from django.utils.http import urlsafe_base64_decode
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+@permission_classes([AllowAny])
+class ResetPasswordView(APIView):
+    def post(self, request, uidb64, token):
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = User.objects.get(pk=uid)
+
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                return Response({'error': 'Invalid token'}, status=400)
+
+            new_password = request.data.get('password')
+            user.set_password(new_password)
+            user.save()
+            return Response({'message': 'Password reset successfully'}, status=200)
+        except Exception as e:
+            return Response({'error': str(e)}, status=400)
 
 logger = logging.getLogger(__name__)
 
@@ -244,11 +310,14 @@ def training_catalog(request):
         return JsonResponse(list(courses), safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+@api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
 def get_absences(request):
-    absences = AbsenceRequest.objects.filter(user=request.user).values(
-        'id', 'type', 'start_date', 'end_date', 'status'
-    )
+    print("User connecté:", request.user, request.user.id)
+    absences = AbsenceRequest.objects.filter(user_id=request.user.id).values(
+    'id', 'type', 'start_date', 'end_date', 'status', 
+    'starts_afternoon', 'ends_afternoon',
+)
     return JsonResponse(list(absences), safe=False)
 # Ajoutez ceci dans views.py
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken

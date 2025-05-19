@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext'; // Chemin vérifié
 
 const HRCommunication = () => {
   const { user } = useAuth();
+  console.log('user auth : ', user)
   const [announcements, setAnnouncements] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -19,12 +20,8 @@ const HRCommunication = () => {
 
   useEffect(() => {
     fetch('/announcements/')
-      .then(response => {
-        if (!response.ok) throw new Error('Erreur réseau');
-        return response.json();
-      })
       .then(data => setAnnouncements(data))
-      .catch(error => console.error('Error:', error));
+      .catch(error => console.log('Error:', error));
   }, []);
 
   // Déclaration correcte des fonctions dans l'ordre
@@ -45,7 +42,7 @@ const HRCommunication = () => {
   const filteredAnnouncements = sortedAnnouncements.filter((announcement) =>
     announcement.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
- 
+
 
   const handleFileUpload = (e) => {
     setNewAnnouncement({
@@ -98,19 +95,19 @@ const HRCommunication = () => {
               type="text"
               placeholder="Titre"
               value={newAnnouncement.title}
-              onChange={(e) => setNewAnnouncement({...newAnnouncement, title: e.target.value})}
+              onChange={(e) => setNewAnnouncement({ ...newAnnouncement, title: e.target.value })}
               required
             />
             <textarea
               placeholder="Contenu"
               value={newAnnouncement.content}
-              onChange={(e) => setNewAnnouncement({...newAnnouncement, content: e.target.value})}
+              onChange={(e) => setNewAnnouncement({ ...newAnnouncement, content: e.target.value })}
               required
             />
             <input
               type="date"
               value={newAnnouncement.date}
-              onChange={(e) => setNewAnnouncement({...newAnnouncement, date: e.target.value})}
+              onChange={(e) => setNewAnnouncement({ ...newAnnouncement, date: e.target.value })}
               required
             />
             <div className="file-upload">
@@ -156,9 +153,9 @@ const HRCommunication = () => {
                 <td>{announcement.title}</td>
                 <td>
                   {announcement.file && (
-                    <a 
-                      href={announcement.file} 
-                      target="_blank" 
+                    <a
+                      href={announcement.file}
+                      target="_blank"
                       rel="noopener noreferrer"
                     >
                       Télécharger

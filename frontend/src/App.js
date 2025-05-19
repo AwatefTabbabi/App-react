@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import ForgotPassword from "./pages/ForgotPassword";
+
 import SideBar from "./components/Sidebar/SideBar";
 import AdminSidebar from "./components/Sidebar/AdminSidebar"; // 🔹 Sidebar Admin ajoutée
 import Navbar from "./components/Navbar";
@@ -18,6 +18,8 @@ import DocumentRequest from "./pages/users/DocumentRequest";
 import AbsenceCancellation from "./pages/users/AbsenceCancellation";
 import Settings from "./pages/users/settings";
 import ChatBotComponent from "./components/ChatBotComponent";
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 // Pages admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -99,7 +101,12 @@ function App() {
         <Routes>
           <Route path="/" element={<Login onLogin={handleLogin} />} />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+  
+
+<Route path="/forgot-password" element={<ForgotPassword />} />
+<Route path="/reset-password/:uid/:token" element={<ResetPassword />} />
+
+
           <Route path="/signup" element={<SignUp />} />
           <Route path="*" element={<Navigate to="/login" />} /> {/* 🔹 Redirection par défaut */}
         </Routes>

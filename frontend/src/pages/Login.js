@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
-import { AuthContext } from "../context/AuthContext"; // Assurez-vous que le chemin est correct
+import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 
 const Login = ({ onLogin }) => {
@@ -9,32 +9,25 @@ const Login = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login } = useContext(AuthContext); // Utilisez `login` du contexte
-  const token = localStorage.getItem('access_token');
-  console.log("Token récupéré :", token);
-  
+  const { login } = useContext(AuthContext);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await axios.post("http://localhost:8000/api/token/", {
+      const response = await axios.post("http://localhost:8000/api/login/", {
         email,
         password,
-    });
+      });
 
-    if (response.data.access) {
-      localStorage.setItem('access', response.data.access); // Token JWT
-      localStorage.setItem('refresh', response.data.refresh);
-        // Rediriger en fonction de l'email
-        if (email === "admin@example.com" && password === "password") {
-          localStorage.setItem("role", "admin"); // Stocke "admin"
-          onLogin("admin");
-          navigate("/admin"); // Redirige vers l'admin    
-        } else {
-          localStorage.setItem("role", "Employee");
-          onLogin("user");
-          navigate("/dashboard"); // Redirige vers la partie utilisateur
-        }
+      if (response.status === 200 && response.data.access) {
+        localStorage.setItem("access", response.data.access);
+        localStorage.setItem("refresh", response.data.refresh);
+
+        const role = response.data.role;
+        localStorage.setItem("role", role === "admin" ? "admin" : "Employee");
+        onLogin(role === "admin" ? "admin" : "user");
+
+        navigate(role === "admin" ? "/admin" : "/dashboard");
       } else {
         setError("Email ou mot de passe incorrect !");
       }
@@ -64,9 +57,18 @@ const Login = ({ onLogin }) => {
         />
         <button type="submit">Se connecter</button>
       </form>
+
       <div className="login-links">
-        <p onClick={() => navigate("/forgot-password")}>Mot de passe oublié ?</p>
-        <p onClick={() => navigate("/signup")}>Créer un compte</p>
+        <p>
+          <span className="link-text" onClick={() => navigate("/forgot-password")}>
+            Mot de passe oublié ?
+          </span>
+        </p>
+        <p>
+          <span className="link-text" onClick={() => navigate("/signup")}>
+            Créer un compte
+          </span>
+        </p>
       </div>
     </div>
   );

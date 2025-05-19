@@ -16,11 +16,10 @@ function AbsenceRequest() {
   const [loading, setLoading] = useState(true);
   const [refreshCounter, setRefreshCounter] = useState(0);
 
-  // Rafraîchissement automatique toutes les 5 secondes
   useEffect(() => {
     const interval = setInterval(() => {
       setRefreshCounter(prev => prev + 1);
-    }, 5000); // 5 secondes
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
@@ -30,11 +29,11 @@ function AbsenceRequest() {
       const token = localStorage.getItem("access");
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/absences/mine/",
+          "http://localhost:8000/api/absences/",
           {
             headers: { 
               "Authorization": `Bearer ${token}`,
-              "Cache-Control": "no-cache" // Empêche la mise en cache
+              "Cache-Control": "no-cache"
             }
           }
         );
@@ -48,6 +47,26 @@ function AbsenceRequest() {
     fetchAbsences();
   }, [refreshCounter]);
 
+  const fetchAbsences = async () => {
+      const token = localStorage.getItem("access");
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/api/absences/",
+          {
+            headers: { 
+              "Authorization": `Bearer ${token}`,
+              "Cache-Control": "no-cache"
+            }
+          }
+        );
+        setUserAbsences(response.data);
+      } catch (error) {
+        console.error("Erreur de chargement:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -58,7 +77,7 @@ function AbsenceRequest() {
 
     try {
       const token = localStorage.getItem("access");
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:8000/api/absences/create/",
         {
           type: absenceType,
@@ -76,9 +95,12 @@ function AbsenceRequest() {
         }
       );
       
-      // Force un nouveau rafraîchissement après la création
       setRefreshCounter(prev => prev + 1);
       alert("Demande envoyée !");
+      setComment("");
+      setStartDate("");
+      setEndDate("");
+      fetchAbsences();
     } catch (error) {
       console.error("Erreur:", error.response?.data || error.message);
       alert("Erreur de connexion");
@@ -93,6 +115,14 @@ function AbsenceRequest() {
       month: '2-digit', 
       year: 'numeric' 
     });
+  };
+
+  const calculateDuration = (start, end) => {
+    if (!start || !end) return '...';
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const diffTime = Math.abs(endDate - startDate);
+    return `${Math.ceil(diffTime / (1000 * 60 * 60 * 24))} jours`;
   };
 
   const getStatusLabel = (status) => {
@@ -110,105 +140,122 @@ function AbsenceRequest() {
         <ArrowLeft size={24} />
       </Link>
 
-      <h2>Demande d'absence</h2>
+      <h2>Gestion des Absences</h2>
 
-      <table className="absence-request-table">
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>Début</th>
-            <th>Début AM</th>
-            <th>Fin</th>
-            <th>Fin AM</th>
-            <th>Statut</th>
-          </tr>
-        </thead>
-        <tbody>
-          {userAbsences.map((absence) => (
-            <tr key={absence.id}>
-              <td>{absence.type}</td>
-              <td>{formatDate(absence.start_date)}</td>
-              <td>{absence.starts_afternoon ? '✔' : '✖'}</td>
-              <td>{formatDate(absence.end_date)}</td>
-              <td>{absence.ends_afternoon ? '✔' : '✖'}</td>
+      <div className="table-wrapper">
+        <table className="formations-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Date Début</th>
+              <th>Date Fin</th>
+              <th>Durée</th>
+              <th>Départ AM</th>
+              <th>Retour AM</th>
+              <th>Statut</th>
+              <th>Commentaire</th>
+            </tr>
+          </thead>
+          <tbody>
+            {userAbsences.map((absence) => (
+              <tr key={absence.id}>
+                <td>{absence.type}</td>
+                <td>{formatDate(absence.start_date)}</td>
+                <td>{formatDate(absence.end_date)}</td>
+                <td>{calculateDuration(absence.start_date, absence.end_date)}</td>
+                <td>{absence.starts_afternoon ? '✔' : '✖'}</td>
+                <td>{absence.ends_afternoon ? '✔' : '✖'}</td>
+                <td>
+                  <span className={`status-badge ${absence.status?.toLowerCase()}`}>
+                    {getStatusLabel(absence.status)}
+                  </span>
+                </td>
+                <td className="comment-cell">{absence.comment || '-'}</td>
+              </tr>
+            ))}
+
+         {/*    <tr className="new-request-preview">
+              <td>{absenceType}</td>
+              <td>{formatDate(startDate)}</td>
+              <td>{formatDate(endDate)}</td>
+              <td>{calculateDuration(startDate, endDate)}</td>
+              <td>{firstDayAfternoon ? '✔' : '✖'}</td>
+              <td>{lastDayAfternoon ? '✔' : '✖'}</td>
               <td>
-                <span className={`status-badge ${absence.status?.toLowerCase()}`}>
-                  {getStatusLabel(absence.status)}
+                <span className="status-badge pending">
+                  {getStatusLabel('pending')}
                 </span>
               </td>
-            </tr>
-          ))}
+              <td className="comment-cell">{comment || '-'}</td>
+            </tr> */}
+          </tbody>
+        </table>
+      </div>
 
-          {/* Prévisualisation de la nouvelle demande */}
-          <tr className="new-request-preview">
-            <td>{absenceType}</td>
-            <td>{formatDate(startDate)}</td>
-            <td>{firstDayAfternoon ? '✔' : '✖'}</td>
-            <td>{formatDate(endDate)}</td>
-            <td>{lastDayAfternoon ? '✔' : '✖'}</td>
-            <td>
-              <span className="status-badge pending">
-                {getStatusLabel('pending')}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      {/* Formulaire de création */}
       <div className="form-section">
-        <h3>Premier jour d'absence</h3>
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          required
-        />
+        <h3>Nouvelle Demande d'Absence</h3>
+        
+        <div className="form-row">
+          <div className="form-group">
+            <label>Type d'absence :</label>
+            <select
+              value={absenceType}
+              onChange={(e) => setAbsenceType(e.target.value)}
+            >
+              <option value="Congé payé">Congé payé</option>
+              <option value="Congé sans solde">Congé sans solde</option>
+              <option value="Congé maladie">Congé maladie</option>
+            </select>
+          </div>
+        </div>
 
-        <label className="checkbox-label">
-          <input
-            type="checkbox"
-            checked={firstDayAfternoon}
-            onChange={() => setFirstDayAfternoon(!firstDayAfternoon)}
+        <div className="form-row">
+          <div className="form-group">
+            <label>Date de début :</label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              required
+            />
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={firstDayAfternoon}
+                onChange={() => setFirstDayAfternoon(!firstDayAfternoon)}
+              />
+              Départ après-midi
+            </label>
+          </div>
+
+          <div className="form-group">
+            <label>Date de fin :</label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              required
+            />
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={lastDayAfternoon}
+                onChange={() => setLastDayAfternoon(!lastDayAfternoon)}
+              />
+              Retour après-midi
+            </label>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label>Commentaire :</label>
+          <textarea
+            placeholder="Détails supplémentaires..."
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            rows="3"
           />
-          Départ dans l'après-midi
-        </label>
-
-        <h3>Dernier jour d'absence</h3>
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          required
-        />
-
-        <label className="checkbox-label">
-          <input
-            type="checkbox"
-            checked={lastDayAfternoon}
-            onChange={() => setLastDayAfternoon(!lastDayAfternoon)}
-          />
-          Retour dans l'après-midi
-        </label>
-
-        <h3>Type d'absence</h3>
-        <select
-          value={absenceType}
-          onChange={(e) => setAbsenceType(e.target.value)}
-          className="type-select"
-        >
-          <option value="Congé payé">Congé payé</option>
-          <option value="Congé sans solde">Congé sans solde</option>
-          <option value="Congé maladie">Congé maladie</option>
-        </select>
-
-        <h3>Commentaire</h3>
-        <textarea
-          className="comment-textarea"
-          placeholder="Détails supplémentaires..."
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
+        </div>
 
         <div className="button-group">
           <button 

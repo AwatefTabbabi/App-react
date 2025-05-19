@@ -15,12 +15,20 @@ import os
 #import pymysql
 #pymysql.install_as_MySQLdb()
 from decouple import config
-#from corsheaders.defaults import default_headers
+from corsheaders.defaults import default_headers
 #import openai
 from dotenv import load_dotenv
 load_dotenv()
-
+import os
+your_personal_email = os.environ.get('ADMIN_EMAIL')  # Dans settings.py
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'         
+EMAIL_PORT = 587                        
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'tabbabiawatef27@gmail.com'      
+EMAIL_HOST_PASSWORD = 'wtqa acum lrmw fqxx'      
 
 
 SECRET_KEY = config('SECRET_KEY', default='clé_temporaire_pour_dev')
@@ -111,11 +119,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'auth.wsgi.application'
 CORS_ALLOW_CREDENTIALS = True
+"""   "http://localhost:3000",  # Remplacez par votre port React
+    "http://127.0.0.1:3000",
+     "http://localhost:3001",
+    "http://127.0.0.1:3001", """
+""" CORS_ALLOWED_ORIGINS = [
+    "*"
+] """
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Remplacez par votre port React
-    "http://127.0.0.1:3000"
-]
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 CORS_ALLOW_METHODS = [
     'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'
@@ -125,6 +138,8 @@ CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
     'authorization',
+    'Authorization',
+    'Cache-Control',
     'content-type',
     'dnt',
     'origin',
@@ -211,6 +226,8 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000"
