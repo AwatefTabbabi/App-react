@@ -13,7 +13,7 @@ function AbsenceRequest() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [userAbsences, setUserAbsences] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [setLoading] = useState(true);
   const [refreshCounter, setRefreshCounter] = useState(0);
 
   useEffect(() => {

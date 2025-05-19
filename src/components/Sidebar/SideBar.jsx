@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { FaBars, FaCalendarTimes, FaBan, FaRegClock, FaChartLine, FaHistory, FaCalendarAlt, FaDollarSign } from "react-icons/fa";
+import { FaBars, FaCalendarTimes, FaBan, FaRegClock,  FaDollarSign } from "react-icons/fa";
 import { BiSearch } from "react-icons/bi";
 import { FaLock } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarMenu from "./SidebarMenu";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faIdBadge, faFolder, faFileAlt, faUsers, faUser, faCreditCard, faEnvelope, faList, faSatelliteDish, faExchangeAlt, faClipboard, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import {faFolder, faFileAlt, faUsers, faUser, faList, faSatelliteDish, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 const routes = [
   {

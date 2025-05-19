@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiMail, FiBell, FiFileText } from "react-icons/fi";
+import { FiFileText } from "react-icons/fi";
 import { IoIosLogOut } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 
