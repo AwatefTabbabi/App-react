@@ -49,6 +49,7 @@ pipeline {
 
         stage('Run Docker container') {
             steps {
+                bat "docker rm -f react_frontend || exit 0"
                 bat "docker run -d --name ${CONTAINER_NAME} -p 3000:3000 ${IMAGE_NAME}"
             }
         }
