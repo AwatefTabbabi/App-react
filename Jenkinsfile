@@ -18,6 +18,7 @@ pipeline {
             steps {
                  dir('backend') { 
                 echo '🐳 Construction des conteneurs Docker...'
+                bat "docker-compose -f ${COMPOSE_FILE} build" 
                 bat "docker-compose build"
                  }
             }
@@ -27,6 +28,7 @@ pipeline {
             steps {
                  dir('backend') { 
                 echo '🚀 Lancement des conteneurs Docker...'
+                bat "docker-compose -f ${COMPOSE_FILE} down"
                 bat "docker-compose up -d"
                  }
             }
