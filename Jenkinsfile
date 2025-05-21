@@ -1,12 +1,7 @@
 pipeline {
     agent any
 
-    environment {
-        COMPOSE_FILE = 'docker-compose.yml'
-    }
-
     stages {
-
         stage('Checkout') {
             steps {
                 echo '📦 Clonage du dépôt...'
@@ -16,33 +11,36 @@ pipeline {
 
         stage('Build Docker containers') {
             steps {
-                 dir('backend') { 
                 echo '🐳 Construction des conteneurs Docker...'
-                bat "docker-compose build"
-                 }
+                bat 'docker-compose build'
             }
         }
 
         stage('Run containers') {
             steps {
-                 dir('backend') { 
                 echo '🚀 Lancement des conteneurs Docker...'
-                bat "docker-compose down || true" 
-                bat "docker-compose up -d"
-                 }
+                bat 'docker-compose down || exit 0' // Correction pour Windows
+                bat 'docker-compose up -d'
             }
         }
 
         stage('Wait for DB & Run migrations') {
             steps {
-                 dir('backend') { 
-                echo '🛠️ Attente de la base de données & migration Django...'
-                bat """
-                    sleep 10
-                    docker exec django_web python manage.py makemigrations
-                    docker exec django_web python manage.py migrate
-                """
-                 }
+                script {
+                    waitUntil {
+                        try {
+                            bat 'docker exec django_web python manage.py check --database default'
+                            return true
+                        } catch (Exception e) {
+                            sleep(5)
+                            return false
+                        }
+                    }
+                    bat """
+                        docker exec django_web python manage.py makemigrations
+                        docker exec django_web python manage.py migrate
+                    """
+                }
             }
         }
     }
@@ -52,14 +50,11 @@ pipeline {
             echo '✅ Backend Django déployé avec succès !'
         }
         failure {
-             dir('backend') { 
             echo '❌ Échec du pipeline Django.'
-            bat "docker-compose -f ${COMPOSE_FILE} logs"
-             }
         }
         cleanup {
-        echo '🧹 Nettoyage...'
-        bat "docker-compose down || true"  /
-    }
+            echo '🧹 Nettoyage...'
+            bat 'docker-compose down || exit 0' // Compatible Windows
+        }
     }
 }
