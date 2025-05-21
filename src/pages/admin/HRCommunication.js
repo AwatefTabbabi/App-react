@@ -19,7 +19,7 @@ const HRCommunication = () => {
   });
 
   useEffect(() => {
-    fetch('/api/announcements/')
+    fetch('/announcements/')
       .then(data => setAnnouncements(data))
       .catch(error => console.log('Error:', error));
   }, []);
@@ -52,13 +52,15 @@ const HRCommunication = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  const formData = new FormData();
-  formData.append('title', newAnnouncement.title);
-  formData.append('content', newAnnouncement.content);
-  formData.append('date', newAnnouncement.date);
-  formData.append('file', newAnnouncement.file); 
-    
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('title', newAnnouncement.title);
+    formData.append('content', newAnnouncement.content);
+    formData.append('date', newAnnouncement.date);
+    if (newAnnouncement.file) {
+      formData.append('file', newAnnouncement.file);
+    }
+
     try {
       const response = await fetch('/api/announcements/', {
         method: 'POST',
