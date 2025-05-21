@@ -16,7 +16,7 @@ pipeline {
 
         stage('Build Docker containers') {
             steps {
-                 dir('BACKEND') { 
+                 dir('backend') { 
                 echo '🐳 Construction des conteneurs Docker...'
                 bat "docker-compose build"
                  }
@@ -25,8 +25,9 @@ pipeline {
 
         stage('Run containers') {
             steps {
-                 dir('BACKEND') { 
+                 dir('backend') { 
                 echo '🚀 Lancement des conteneurs Docker...'
+                bat "docker-compose down || true" 
                 bat "docker-compose up -d"
                  }
             }
@@ -34,7 +35,7 @@ pipeline {
 
         stage('Wait for DB & Run migrations') {
             steps {
-                 dir('BACKEND') { 
+                 dir('backend') { 
                 echo '🛠️ Attente de la base de données & migration Django...'
                 bat """
                     sleep 10
@@ -48,17 +49,17 @@ pipeline {
 
     post {
         success {
-            echo '✅ BACKEND Django déployé avec succès !'
+            echo '✅ Backend Django déployé avec succès !'
         }
         failure {
-             dir('BACKEND') { 
+             dir('backend') { 
             echo '❌ Échec du pipeline Django.'
             bat "docker-compose -f ${COMPOSE_FILE} logs"
              }
         }
         cleanup {
-            echo '🧹 Nettoyage si nécessaire...'
-            // Exemple : bat "docker system prune -f"
-        }
+        echo '🧹 Nettoyage...'
+        bat "docker-compose down || true"  /
+    }
     }
 }
