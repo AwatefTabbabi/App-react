@@ -273,45 +273,24 @@ def document_request(request):
     except Exception as e:
         logger.error(f"Erreur document_request : {e}")
         return JsonResponse({'error': str(e)}, status=400)
-@api_view(['GET', 'POST'])
-@authentication_classes([JWTAuthentication])
-def handle_announcements(request):
-    if request.method == 'GET':
-        return get_announcements(request)
-    elif request.method == 'POST':
-        return create_announcement(request)
+@api_view(['GET'])
+def get_announcements(request):
+    try:
+        announcements = HRAnnouncement.objects.all().order_by('-date')
+        serializer = HRAnnouncementSerializer(announcements, many=True)
+        return Response(serializer.data)
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
+
 @api_view(['POST'])
-@authentication_classes([JWTAuthentication])
-@permission_classes([IsAdminUser])
 def create_announcement(request):
     try:
         data = request.data.copy()
         data['author'] = request.user.id
         
-        # Ajoutez cette ligne pour gérer le fichier
-        file = request.FILES.get('file', None)
-        
         serializer = HRAnnouncementSerializer(data=data)
         if serializer.is_valid():
-            if file:
-                serializer.validated_data['file'] = file
             serializer.save()
-            users = User.objects.all()
-            for user in users:
-             subject = f"Nouvelle annonce RH : {serializer.data['title']}"
-             message = render_to_string('email/announcement_notification.html', {
-        'user': user,
-        'announcement': serializer.data
-                 })
-             send_mail(
-               subject,
-               message,
-               'noreply@votre-entreprise.com',
-               [user.email],
-               html_message=message,
-               fail_silently=False
-    )
-
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
     except Exception as e:

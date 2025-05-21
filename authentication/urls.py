@@ -36,7 +36,8 @@ urlpatterns = [
     path('reclamations/create/', ReclamationCreateView.as_view(), name='reclamation-create'),
     path('reclamations/', ReclamationListView.as_view(), name='reclamation-list'),
 
-    path('announcements/', views.handle_announcements, name='announcements'),
+    path('announcements/', views.get_announcements, name='announcements'),
+    path('announcements/', views.create_announcement, name='create_announcement'),
     path('trainings/', views.training_catalog, name='trainings'),
     path('api/inquiries/',views. create_inquiry, name='create_inquiry'),
     path('inscriptions/', InscriptionCreateAPIView.as_view(), name='inscription-create'),
