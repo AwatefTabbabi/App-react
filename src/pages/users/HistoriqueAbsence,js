@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./AbsenceRequest.css"; // ou créer un fichier HistoriqueAbsence.css si tu préfères
+import "./AbsenceRequest.css"; 
 
 export default function HistoriqueAbsence() {
   const [absences, setAbsences] = useState([]);
