@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FiFileText } from "react-icons/fi";
 import { IoIosLogOut } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-
+import { FiBell } from "react-icons/fi";
 const Navbar = ({ onLogout }) => {
   const navigate = useNavigate();
   const [role, setRole] = useState("EMPLOYEE"); // Par défaut, "EMPLOYEE"
