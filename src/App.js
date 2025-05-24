@@ -27,7 +27,7 @@ import AdminEmails from "./pages/admin/AdminEmails";
 import Catalogue from "./pages/admin/catalogue";
 import AdminDemandes from "./pages/admin/AdminDemandes";
 import AdminAbsenceNotification from "./pages/admin/AdminAbsenceNotification";
-import HistoriqueAbsence from "./pages/users/HistoriqueAbsence,js";
+import HistoriqueAbsence from "./pages/users/HistoriqueAbsence.js";
 import ConsultationSoldes from "./pages/users/ConsultationSoldes";
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
