@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import "./Login.css"; 
 export default function ResetPassword() {
   const { uidb64, token } = useParams();
   const navigate = useNavigate();
@@ -33,16 +33,35 @@ export default function ResetPassword() {
   }, [success, navigate]);
 
   return (
-    <div>
-      <h2>Reset Password</h2>
-      <input
-        type="password"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-        placeholder="New password"
-      />
-      <button onClick={resetPassword}>Reset</button>
-      <p>{message}</p>
+   <div className="login-container">
+      <h2>Mot de passe oublié</h2>
+      <form onSubmit={sendResetLink}>
+        <label htmlFor="email">Email :</label>
+        <input
+          id="email"
+          type="email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          required
+          placeholder="Entrez votre email"
+        />
+        <button type="submit">Envoyer le lien de réinitialisation</button>
+        {error && <div className="error">{error}</div>}
+        {message && <div className="success">{message}</div>}
+      </form>
+
+      <div className="login-links">
+        <p>
+          <span className="link-text" onClick={() => navigate("/login")}>
+            Retour à la connexion
+          </span>
+        </p>
+        <p>
+          <span className="link-text" onClick={() => navigate("/signup")}>
+            Créer un compte
+          </span>
+        </p>
+      </div>
     </div>
   );
 }
