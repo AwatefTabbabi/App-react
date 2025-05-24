@@ -47,25 +47,7 @@ function AbsenceRequest() {
     fetchAbsences();
   }, [refreshCounter,setLoading]);
 
-  const fetchAbsences = async () => {
-      const token = localStorage.getItem("access");
-      try {
-        const response = await axios.post(
-          "http://localhost:8000/api/absences/",
-          {
-            headers: { 
-              "Authorization": `Bearer ${token}`,
-              "Cache-Control": "no-cache"
-            }
-          }
-        );
-        setUserAbsences(response.data);
-      } catch (error) {
-        console.error("Erreur de chargement:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+ 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
