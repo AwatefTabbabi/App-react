@@ -6,7 +6,7 @@ import { FaLock } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarMenu from "./SidebarMenu";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faFolder, faFileAlt,  faUser,  faSatelliteDish, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import {faFolder, faFileAlt,  faUser,  faSatelliteDish, faInfoCircle  } from '@fortawesome/free-solid-svg-icons';
 
 const routes = [
   {
