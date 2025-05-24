@@ -24,7 +24,7 @@ function AbsenceRequest() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchAbsences = async () => {
       const token = localStorage.getItem("access");
       try {
@@ -65,7 +65,7 @@ function AbsenceRequest() {
       } finally {
         setLoading(false);
       }
-    };
+    };*/
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -139,7 +139,7 @@ function AbsenceRequest() {
       <Link to="/" className="back-icon">
         <ArrowLeft size={24} />
       </Link>
-
+{/* 
       <h2>Gestion des Absences</h2>
 
       <div className="table-wrapper">
@@ -174,7 +174,7 @@ function AbsenceRequest() {
               </tr>
             ))}
 
-         {/*    <tr className="new-request-preview">
+           <tr className="new-request-preview">
               <td>{absenceType}</td>
               <td>{formatDate(startDate)}</td>
               <td>{formatDate(endDate)}</td>
@@ -187,11 +187,11 @@ function AbsenceRequest() {
                 </span>
               </td>
               <td className="comment-cell">{comment || '-'}</td>
-            </tr> */}
+            </tr> 
           </tbody>
         </table>
       </div>
-
+*/}
       <div className="form-section">
         <h3>Nouvelle Demande d'Absence</h3>
         
