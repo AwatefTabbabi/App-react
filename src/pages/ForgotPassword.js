@@ -15,7 +15,7 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div>
+    <div className="login-container">
       <h2>Forgot Password</h2>
       <input
         value={email}
