@@ -1,15 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import "./Login.css"; 
+import "./Login.css";
+
 export default function ResetPassword() {
   const { uidb64, token } = useParams();
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [success, setSuccess] = useState(false);
 
-  const resetPassword = async () => {
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setError('');
+    setMessage('');
     try {
       const res = await axios.post(`http://localhost:8000/api/reset-password/${uidb64}/${token}/`, {
         password,
@@ -17,7 +22,7 @@ export default function ResetPassword() {
       setMessage(res.data.message);
       setSuccess(true);
     } catch (err) {
-      setMessage(err.response?.data?.error || 'Something went wrong');
+      setError(err.response?.data?.error || 'Something went wrong');
       setSuccess(false);
     }
   };
@@ -33,19 +38,19 @@ export default function ResetPassword() {
   }, [success, navigate]);
 
   return (
-   <div className="login-container">
-      <h2>Mot de passe oublié</h2>
-      <form onSubmit={sendResetLink}>
-        <label htmlFor="email">Email :</label>
+    <div className="login-container">
+      <h2>Réinitialiser le mot de passe</h2>
+      <form onSubmit={handleResetPassword}>
+        <label htmlFor="password">Nouveau mot de passe :</label>
         <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
+          id="password"
+          type="password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
           required
-          placeholder="Entrez votre email"
+          placeholder="Entrez votre nouveau mot de passe"
         />
-        <button type="submit">Envoyer le lien de réinitialisation</button>
+        <button type="submit">Réinitialiser le mot de passe</button>
         {error && <div className="error">{error}</div>}
         {message && <div className="success">{message}</div>}
       </form>
