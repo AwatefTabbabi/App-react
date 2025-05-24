@@ -33,7 +33,7 @@ const routes = [
       
       { path: "/demande-absence", name: "Demande d'absence", icon: <FaRegClock /> },
       { path: "/annulation-d-absence", name: "Annulation d'absence", icon: <FaBan /> },
-      { path: "/settings/historique-des-absences", name: "Historique des absences", icon: <FaHistory /> },
+      { path: "/historique-des-absences", name: "Historique des absences", icon: <FaHistory /> },
      /* { path: "/settings/mon-planning-d-absences", name: "Mon planning d'absences", icon: <FaChartLine /> },
       { path: "/settings/planning-d-equipe", name: "Planning d'équipe", icon: <FaCalendarAlt /> },*/
       { path: "/consultation-des-soldes", name: "Consultation des soldes", icon: <FaDollarSign /> },
