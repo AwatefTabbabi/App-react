@@ -16,9 +16,9 @@ const routes = [
     subRoutes: [
       { path: "/donnees-administratives", name: "Données administratives", icon: <FontAwesomeIcon icon={faFileAlt} /> },
       { path: "/demande-d-attestation", name: "Demande d'attestation", icon: <FontAwesomeIcon icon={faFolder} /> },
-      /*{ path: "/settings/demande-de-badge", name: "Demande de badge", icon: <FontAwesomeIcon icon={faIdBadge} /> },*/
+      /*{ path: "/settings/demande-de-badge", name: "Demande de badge", icon: <FontAwesomeIcon icon={faIdBadge} /> },
       
-      { path: "/synthese", name: "Synthèse", icon: <FontAwesomeIcon icon={faUsers} /> },
+      { path: "/synthese", name: "Synthèse", icon: <FontAwesomeIcon icon={faUsers} /> },*/
       { path: "/mes-coordonnees", name: "Mes coordonnées", icon: <FontAwesomeIcon icon={faUser} /> },
       /*{ path: "/settings/mes-coordonnees-bancaires", name: "Mes coordonnées bancaires", icon: <FontAwesomeIcon icon={faCreditCard} /> },
       { path: "/settings/mon-etat-civil", name: "Mon état civil", icon: <FontAwesomeIcon icon={faUser} /> },
@@ -33,13 +33,13 @@ const routes = [
       
       { path: "/demande-absence", name: "Demande d'absence", icon: <FaRegClock /> },
       { path: "/annulation-d-absence", name: "Annulation d'absence", icon: <FaBan /> },
-     /* { path: "/settings/mon-planning-d-absences", name: "Mon planning d'absences", icon: <FaChartLine /> },
       { path: "/settings/historique-des-absences", name: "Historique des absences", icon: <FaHistory /> },
+     /* { path: "/settings/mon-planning-d-absences", name: "Mon planning d'absences", icon: <FaChartLine /> },
       { path: "/settings/planning-d-equipe", name: "Planning d'équipe", icon: <FaCalendarAlt /> },*/
       { path: "/consultation-des-soldes", name: "Consultation des soldes", icon: <FaDollarSign /> },
     ],
   },
-  { path: "/mes-competences", name: "Mes compétences", icon: <FontAwesomeIcon icon={faList} /> },
+ 
   { path: "/ma-formation", name: "Ma formation", icon: <FontAwesomeIcon icon={faSatelliteDish} /> },
   { path: "/settings", name: "Settings", icon: <FaLock size={16} /> },
   /*{ path: "/mon-evaluation", name: "Mon évaluation", icon: <FontAwesomeIcon icon={faClipboard} /> },*/

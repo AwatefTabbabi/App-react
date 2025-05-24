@@ -10,7 +10,7 @@ const adminRoutes = [
   //{ path: "/admin/absence-notifications", name: "Absences", icon: <FaBell /> },
   { path: "/AdminDemandes", name: "Demandes", icon: <FaUsers /> },
   { path: "/AdminEmails", name: "Emails", icon: <FaEnvelope /> },
-  { path: "/settings", name: "Paramètres", icon: <FaCog /> },
+  
 ];
 
 const AdminSidebar = ({ children }) => {

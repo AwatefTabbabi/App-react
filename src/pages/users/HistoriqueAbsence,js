@@ -1,0 +1,45 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import "./AbsenceRequest.css"; // Utilise le style déjà existant
+
+export default function HistoriqueAbsence() {
+  const [absences, setAbsences] = useState([]);
+
+  useEffect(() => {
+    axios.get("http://localhost:8000/api/absences/history/")
+      .then(res => setAbsences(res.data))
+      .catch(() => setAbsences([]));
+  }, []);
+
+  return (
+    <div className="absence-request-container">
+      <h2>Historique de mes absences</h2>
+      <table className="absence-request-table">
+        <thead>
+          <tr>
+            <th>Date début</th>
+            <th>Date fin</th>
+            <th>Type</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          {absences.length === 0 ? (
+            <tr>
+              <td colSpan="4" style={{ textAlign: "center" }}>Aucune absence enregistrée.</td>
+            </tr>
+          ) : (
+            absences.map((absence, idx) => (
+              <tr key={idx}>
+                <td>{absence.start_date}</td>
+                <td>{absence.end_date}</td>
+                <td>{absence.type}</td>
+                <td>{absence.status}</td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
