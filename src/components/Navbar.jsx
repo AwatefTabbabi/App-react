@@ -47,8 +47,9 @@ const Navbar = ({ onLogout }) => {
         {role === "ADMIN" && (
           <>
           {/* <FiMail className="icon" onClick={() => navigate("/AdminEmails")} />
-           <FiBell className="icon" onClick={() => navigate("/AdminDemandes")} /> */}
-           <FiBell className="icon" onClick={() => navigate("/catalogue")} />
+           
+           <FiBell className="icon" onClick={() => navigate("/catalogue")} />*/}
+           <FiBell className="icon" onClick={() => navigate("/AdminDemandes")} /> 
           </>
         )}
 
