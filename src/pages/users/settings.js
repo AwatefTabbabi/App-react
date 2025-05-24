@@ -6,6 +6,7 @@ import {
   FaFileUpload,
   FaCheckCircle
 } from "react-icons/fa";
+import "./setings.css";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ArrowLeft } from "lucide-react";
