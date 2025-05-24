@@ -6,7 +6,7 @@ export default function HistoriqueAbsence() {
   const [absences, setAbsences] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/absences/")
+    axios.get("http://localhost:8000/api/absences/history/")
       .then(res => setAbsences(res.data))
       .catch(() => setAbsences([]));
   }, []);
