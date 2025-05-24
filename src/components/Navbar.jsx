@@ -1,34 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { FiFileText } from "react-icons/fi";
+import { FiFileText, FiBell } from "react-icons/fi";
 import { IoIosLogOut } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { FiBell } from "react-icons/fi";
+import axios from "axios";
+
 const Navbar = ({ onLogout }) => {
   const navigate = useNavigate();
   const [role, setRole] = useState("EMPLOYEE"); // Par défaut, "EMPLOYEE"
+  const [notificationCount, setNotificationCount] = useState(0);
 
   useEffect(() => {
-    const storedRole = localStorage.getItem("role"); // Récupérer le rôle stocké
+    const storedRole = localStorage.getItem("role");
     if (storedRole) {
-      setRole(storedRole.toUpperCase()); // Met en majuscule pour éviter les erreurs
+      setRole(storedRole.toUpperCase());
     }
   }, []);
 
+  // Récupérer le nombre de notifications pour l'admin
+  useEffect(() => {
+    if (role === "ADMIN") {
+      axios
+        .get("http://localhost:8000/api/admin/unread-requests-count/")
+        .then((res) => setNotificationCount(res.data.count))
+        .catch(() => setNotificationCount(0));
+    }
+  }, [role]);
+
   const handleLogout = () => {
-    // Afficher une boîte de dialogue de confirmation
     const confirmLogout = window.confirm("Voulez-vous vraiment vous déconnecter ?");
-
-    // Si l'utilisateur annule, ne rien faire
     if (!confirmLogout) return;
-
-    // Si l'utilisateur confirme, procéder à la déconnexion
     localStorage.removeItem("token");
     sessionStorage.removeItem("token");
-    localStorage.removeItem("role"); // Supprime aussi le rôle stocké
-
-    onLogout(); // Mettre à jour l'état d'authentification
+    localStorage.removeItem("role");
+    onLogout();
     navigate("/login");
   };
+
   return (
     <nav className="navbar">
       <div className="navbar-left">
@@ -39,25 +46,23 @@ const Navbar = ({ onLogout }) => {
           style={{ cursor: "pointer" }}
           onClick={handleLogout}
         />
-        <span className="employee-text">{role}</span> {/* Affichage dynamique */}
+        <span className="employee-text">{role}</span>
       </div>
 
       <div className="navbar-right">
         <FiFileText className="icon" onClick={() => navigate("/hr-communication")} />
-
-        {/* 🔹 Afficher FiFileText uniquement si c'est un ADMIN */}
         {role === "ADMIN" && (
-          <>
-            {/* <FiMail className="icon" onClick={() => navigate("/AdminEmails")} />
-           
-           <FiBell className="icon" onClick={() => navigate("/catalogue")} />*/}
+          <div style={{ position: "relative", display: "inline-block" }}>
             <FiBell className="icon" onClick={() => navigate("/AdminDemandes")} />
-          </>
+            {notificationCount > 0 && (
+              <span className="notification-badge">{notificationCount}</span>
+            )}
+          </div>
         )}
-
-        <IoIosLogOut className="icon logout-icon" onClick={handleLogout} />
+        <IoIosLogOut className="icon" onClick={handleLogout} />
       </div>
     </nav>
   );
 };
+
 export default Navbar;
