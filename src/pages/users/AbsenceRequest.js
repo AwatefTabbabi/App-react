@@ -24,7 +24,7 @@ function AbsenceRequest() {
     return () => clearInterval(interval);
   }, []);
 
-  /*useEffect(() => {
+  useEffect(() => {
     const fetchAbsences = async () => {
       const token = localStorage.getItem("access");
       try {
@@ -65,7 +65,7 @@ function AbsenceRequest() {
       } finally {
         setLoading(false);
       }
-    };*/
+    };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
