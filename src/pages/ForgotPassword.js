@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import axios from 'axios';
 import "./Login.css"; // On utilise le même CSS que login
-
+import{useNavigate} from"react-router-dom";
 export default function ForgotPassword() {
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate ? useNavigate() : () => {};
-
+    const [email, setEmail] = useState('');
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
+    const navigate = useNavigate(); 
   const sendResetLink = async (e) => {
     e.preventDefault();
     setError('');
