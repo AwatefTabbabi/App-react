@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./AbsenceRequest.css"; // Utilise le style déjà existant
+import "./AbsenceRequest.css";
 
 export default function HistoriqueAbsence() {
   const [absences, setAbsences] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/absences/history/")
+    axios.get("http://localhost:8000/api/absences/")
       .then(res => setAbsences(res.data))
       .catch(() => setAbsences([]));
   }, []);

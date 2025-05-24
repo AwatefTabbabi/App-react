@@ -174,20 +174,7 @@ function AbsenceRequest() {
               </tr>
             ))}
 
-         {/*    <tr className="new-request-preview">
-              <td>{absenceType}</td>
-              <td>{formatDate(startDate)}</td>
-              <td>{formatDate(endDate)}</td>
-              <td>{calculateDuration(startDate, endDate)}</td>
-              <td>{firstDayAfternoon ? '✔' : '✖'}</td>
-              <td>{lastDayAfternoon ? '✔' : '✖'}</td>
-              <td>
-                <span className="status-badge pending">
-                  {getStatusLabel('pending')}
-                </span>
-              </td>
-              <td className="comment-cell">{comment || '-'}</td>
-            </tr> */}
+         
           </tbody>
         </table>
       </div>
