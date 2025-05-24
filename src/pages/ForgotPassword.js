@@ -15,16 +15,18 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="login-container">
-      <h2>Forgot Password</h2>
-      <input
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        placeholder="Enter your email"
-        type="email"
-      />
-      <button onClick={sendResetLink}>Send Reset Link</button>
-      <p>{message}</p>
-    </div>
+   <div className="login-container">
+     <h2>Forgot Password</h2>
+     <label htmlFor="email">Email :</label>
+     <input
+       id="email"
+       value={email}
+       onChange={e => setEmail(e.target.value)}
+       placeholder="Enter your email"
+       type="email"
+     />
+     <button onClick={sendResetLink}>Send Reset Link</button>
+     <p>{message}</p>
+   </div>
   );
 }
