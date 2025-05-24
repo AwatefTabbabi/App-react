@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { FaTachometerAlt, FaBook,  FaUsers, FaEnvelope, FaCog } from "react-icons/fa";
+import { FaTachometerAlt, FaBook,  FaUsers, FaEnvelope,  } from "react-icons/fa";
 import { FaBars } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
 import { BiSearch } from "react-icons/bi";
