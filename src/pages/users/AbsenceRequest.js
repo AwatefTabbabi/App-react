@@ -44,7 +44,6 @@ function AbsenceRequest() {
         setLoading(false);
       }
     };
-    fetchAbsences();
   }, [refreshCounter,setLoading]);
 
 
@@ -81,7 +80,6 @@ function AbsenceRequest() {
       setComment("");
       setStartDate("");
       setEndDate("");
-      fetchAbsences();
     } catch (error) {
       console.error("Erreur:", error.response?.data || error.message);
       alert("Erreur de connexion");
