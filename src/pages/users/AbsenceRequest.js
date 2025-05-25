@@ -25,7 +25,7 @@ function AbsenceRequest() {
 
   useEffect(() => {
     fetchAbsences();
-  }, [refreshCounter]);
+  }, [refreshCounter, fetchAbsences]);
 
   const fetchAbsences = async () => {
     const token = localStorage.getItem("access");
