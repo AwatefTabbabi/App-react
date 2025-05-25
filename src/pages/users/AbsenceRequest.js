@@ -6,65 +6,47 @@ import './AbsenceRequest.css';
 
 function AbsenceRequest() {
   const navigate = useNavigate();
-  const [absenceType] = useState("Congé payé");
-  const [firstDayAfternoon] = useState(false);
-  const [lastDayAfternoon] = useState(false);
+  const [absenceType, setAbsenceType] = useState("Congé payé");
+  const [firstDayAfternoon, setFirstDayAfternoon] = useState(false);
+  const [lastDayAfternoon, setLastDayAfternoon] = useState(false);
   const [comment, setComment] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [ setRefreshCounter] = useState(0);
+  const [refreshCounter, setRefreshCounter] = useState(0);
+  const [userAbsences, setUserAbsences] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setRefreshCounter(prev => prev + 1);
     }, 5000);
-
     return () => clearInterval(interval);
   }, []);
 
-  /*useEffect(() => {
-    const fetchAbsences = async () => {
-      const token = localStorage.getItem("access");
-      try {
-        const response = await axios.get(
-          "http://localhost:8000/api/absences/",
-          {
-            headers: { 
-              "Authorization": `Bearer ${token}`,
-              "Cache-Control": "no-cache"
-            }
-          }
-        );
-        setUserAbsences(response.data);
-      } catch (error) {
-        console.error("Erreur de chargement:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  useEffect(() => {
     fetchAbsences();
-  }, [refreshCounter,setLoading]);
+  }, [refreshCounter]);
 
   const fetchAbsences = async () => {
-      const token = localStorage.getItem("access");
-      try {
-        const response = await axios.post(
-          "http://localhost:8000/api/absences/",
-          {
-            headers: { 
-              "Authorization": `Bearer ${token}`,
-              "Cache-Control": "no-cache"
-            }
+    const token = localStorage.getItem("access");
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/absences/",
+        {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Cache-Control": "no-cache"
           }
-        );
-        setUserAbsences(response.data);
-      } catch (error) {
-        console.error("Erreur de chargement:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-*/
+        }
+      );
+      setUserAbsences(response.data);
+    } catch (error) {
+      console.error("Erreur de chargement:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -92,13 +74,12 @@ function AbsenceRequest() {
           }
         }
       );
-      
+
       setRefreshCounter(prev => prev + 1);
       alert("Demande envoyée !");
       setComment("");
       setStartDate("");
       setEndDate("");
-      fetchAbsences();
     } catch (error) {
       console.error("Erreur:", error.response?.data || error.message);
       alert("Erreur de connexion");
@@ -108,10 +89,10 @@ function AbsenceRequest() {
   const formatDate = (dateString) => {
     if (!dateString) return '...';
     const date = new Date(dateString);
-    return date.toLocaleDateString('fr-FR', { 
-      day: '2-digit', 
-      month: '2-digit', 
-      year: 'numeric' 
+    return date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
     });
   };
 
@@ -123,13 +104,13 @@ function AbsenceRequest() {
     return `${Math.ceil(diffTime / (1000 * 60 * 60 * 24))} jours`;
   };
 
-  /*const getStatusLabel = (status) => {
-    switch((status || '').toLowerCase()) {
+  const getStatusLabel = (status) => {
+    switch ((status || '').toLowerCase()) {
       case 'approved': return 'Approuvé';
       case 'pending': return 'En attente';
       case 'rejected': return 'Rejeté';
       default: return 'Inconnu';
-    }*/
+    }
   };
 
   return (
@@ -137,7 +118,7 @@ function AbsenceRequest() {
       <Link to="/" className="back-icon">
         <ArrowLeft size={24} />
       </Link>
-{/* 
+
       <h2>Gestion des Absences</h2>
 
       <div className="table-wrapper">
@@ -185,14 +166,14 @@ function AbsenceRequest() {
                 </span>
               </td>
               <td className="comment-cell">{comment || '-'}</td>
-            </tr> 
+            </tr>
           </tbody>
         </table>
       </div>
-*/}
+
       <div className="form-section">
         <h3>Nouvelle Demande d'Absence</h3>
-        
+
         <div className="form-row">
           <div className="form-group">
             <label>Type d'absence :</label>
@@ -256,13 +237,13 @@ function AbsenceRequest() {
         </div>
 
         <div className="button-group">
-          <button 
+          <button
             onClick={handleSubmit}
             className="submit-button"
           >
             Soumettre la demande
           </button>
-          <button 
+          <button
             onClick={() => navigate("/dashboard")}
             className="cancel-button"
           >
@@ -272,6 +253,6 @@ function AbsenceRequest() {
       </div>
     </div>
   );
-
+}
 
 export default AbsenceRequest;
