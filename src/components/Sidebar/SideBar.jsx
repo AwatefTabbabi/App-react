@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { FaBars, FaCalendarTimes, FaBan, FaRegClock,  FaHistory, FaDollarSign } from "react-icons/fa";
+import { FaBars, FaCalendarTimes, FaBan, FaRegClock,  FaHistory } from "react-icons/fa";
 import { BiSearch } from "react-icons/bi";
 import { FaLock } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
