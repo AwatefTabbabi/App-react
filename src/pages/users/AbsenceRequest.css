@@ -1,18 +1,18 @@
 /* Conteneur principal centré */
 .absence-request-container {
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* Déplace le conteneur de 50% de sa propre taille */
-    width: 500px;
-    margin: 140px auto;
-    background: white;
-    padding: 40px;
-    border-radius: 100px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  width: 500px;
+  margin: 60px auto 40px auto; /* 60px de marge en haut */
+  background: white;
+  padding: 40px;
+  border-radius: 24px; /* 100px est trop arrondi, 24px est plus moderne */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+  align-items: center;
+  justify-content: center;
+}
   
   /* Titre */
   .absence-request-container h2,
