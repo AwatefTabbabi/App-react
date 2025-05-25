@@ -6,15 +6,13 @@ import './AbsenceRequest.css';
 
 function AbsenceRequest() {
   const navigate = useNavigate();
-  const [absenceType, setAbsenceType] = useState("Congé payé");
-  const [firstDayAfternoon, setFirstDayAfternoon] = useState(false);
-  const [lastDayAfternoon, setLastDayAfternoon] = useState(false);
+  const [absenceType] = useState("Congé payé");
+  const [firstDayAfternoon] = useState(false);
+  const [lastDayAfternoon] = useState(false);
   const [comment, setComment] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [userAbsences, setUserAbsences] = useState([]);
-  const [setLoading] = useState(true);
-  const [refreshCounter, setRefreshCounter] = useState(0);
+  const [ setRefreshCounter] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -24,7 +22,7 @@ function AbsenceRequest() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchAbsences = async () => {
       const token = localStorage.getItem("access");
       try {
@@ -66,7 +64,7 @@ function AbsenceRequest() {
         setLoading(false);
       }
     };
-
+*/
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -125,13 +123,13 @@ function AbsenceRequest() {
     return `${Math.ceil(diffTime / (1000 * 60 * 60 * 24))} jours`;
   };
 
-  const getStatusLabel = (status) => {
+  /*const getStatusLabel = (status) => {
     switch((status || '').toLowerCase()) {
       case 'approved': return 'Approuvé';
       case 'pending': return 'En attente';
       case 'rejected': return 'Rejeté';
       default: return 'Inconnu';
-    }
+    }*/
   };
 
   return (
@@ -139,7 +137,7 @@ function AbsenceRequest() {
       <Link to="/" className="back-icon">
         <ArrowLeft size={24} />
       </Link>
-
+{/* 
       <h2>Gestion des Absences</h2>
 
       <div className="table-wrapper">
@@ -174,7 +172,7 @@ function AbsenceRequest() {
               </tr>
             ))}
 
-         {/*    <tr className="new-request-preview">
+            <tr className="new-request-preview">
               <td>{absenceType}</td>
               <td>{formatDate(startDate)}</td>
               <td>{formatDate(endDate)}</td>
@@ -187,11 +185,11 @@ function AbsenceRequest() {
                 </span>
               </td>
               <td className="comment-cell">{comment || '-'}</td>
-            </tr> */}
+            </tr> 
           </tbody>
         </table>
       </div>
-
+*/}
       <div className="form-section">
         <h3>Nouvelle Demande d'Absence</h3>
         
@@ -274,6 +272,6 @@ function AbsenceRequest() {
       </div>
     </div>
   );
-}
+
 
 export default AbsenceRequest;
