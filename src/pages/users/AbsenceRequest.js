@@ -45,7 +45,7 @@ function AbsenceRequest() {
       }
     };
     fetchAbsences();
-  }, [refreshCounter,setLoading]);
+  }, [refreshCounter, setLoading, setUserAbsences]);
 
 
   const handleSubmit = async (e) => {
