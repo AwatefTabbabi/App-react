@@ -14,7 +14,7 @@ function AbsenceRequest() {
   const [endDate, setEndDate] = useState("");
   const [refreshCounter, setRefreshCounter] = useState(0);
   const [userAbsences, setUserAbsences] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [ setLoading] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
