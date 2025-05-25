@@ -28,7 +28,7 @@ import Catalogue from "./pages/admin/catalogue";
 import AdminDemandes from "./pages/admin/AdminDemandes";
 import AdminAbsenceNotification from "./pages/admin/AdminAbsenceNotification";
 import HistoriqueAbsence from "./pages/users/HistoriqueAbsence.js";
-import ConsultationSoldes from "./pages/users/ConsultationSoldes";
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [role, setRole] = useState(null);
@@ -92,7 +92,7 @@ function App() {
                 <Route path="/hr-communication" element={<HRCommunication />} />
                 <Route path="/donnees-administratives" element={<DonneesAdministratives />} />
                 <Route path="/historique-des-absences" element={<HistoriqueAbsence />} />
-                <Route path="/consultation-des-soldes" element={<ConsultationSoldes />} />
+                
                 <Route path="/demande-d-attestation" element={<DocumentRequest />} />
                 <Route path="/annulation-d-absence" element={<AbsenceCancellation />} />
                 <Route path="/settings" element={<Settings />} />
