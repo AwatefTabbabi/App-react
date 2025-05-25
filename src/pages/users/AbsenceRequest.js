@@ -44,6 +44,7 @@ function AbsenceRequest() {
         setLoading(false);
       }
     };
+    fetchAbsences();
   }, [refreshCounter,setLoading]);
 
 
