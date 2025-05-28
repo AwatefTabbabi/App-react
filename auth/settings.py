@@ -29,7 +29,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'tabbabiawatef27@gmail.com'      
 EMAIL_HOST_PASSWORD = 'wtqaacumlrmwfqxx'      
-
+OPENROUTER_API_KEY = "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"
 
 SECRET_KEY = config('SECRET_KEY', default='clé_temporaire_pour_dev')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
