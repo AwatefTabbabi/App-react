@@ -20,8 +20,10 @@ const HRCommunication = () => {
   const { user } = useAuth();
   const [announcements, setAnnouncements] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "ascending" });
   const [successMessage, setSuccessMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
   const { 
     register, 
@@ -36,42 +38,71 @@ const HRCommunication = () => {
   const fileWatch = watch("file");
 
   useEffect(() => {
-    // Simuler un appel API pour récupérer les annonces
-    const mockAnnouncements = [
-      {
-        id: 1,
-        title: "Congés d'été",
-        content: "Planning des congés d'été 2023",
-        date: "2023-06-15",
-        file: null
-      },
-      {
-        id: 2,
-        title: "Nouvelle politique RH",
-        content: "Mise à jour de la politique des congés",
-        date: "2023-05-20",
-        file: "/documents/politique.pdf"
-      }
-    ];
-    setAnnouncements(mockAnnouncements);
+    fetchAnnouncements();
   }, []);
 
+  const fetchAnnouncements = async () => {
+    try {
+      setLoading(true);
+      // Remplacez par votre endpoint API réel
+      const response = await axios.get("http://localhost:8000/api/announcements/");
+      setAnnouncements(response.data);
+      setLoading(false);
+    } catch (err) {
+      setError("Erreur lors du chargement des annonces");
+      setLoading(false);
+      console.error("Fetch error:", err);
+    }
+  };
+
   const requestSort = (key) => {
-    let direction = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") direction = "desc";
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
     setSortConfig({ key, direction });
   };
 
-  const sortedAnnouncements = [...announcements].sort((a, b) => {
+  const sortedAnnouncements = React.useMemo(() => {
+    const sortableItems = [...announcements];
     if (sortConfig.key) {
-      if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === "asc" ? -1 : 1;
-      if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === "asc" ? 1 : -1;
+      sortableItems.sort((a, b) => {
+        // Convertir en minuscules pour le tri insensible à la casse
+        const aValue = typeof a[sortConfig.key] === 'string' 
+          ? a[sortConfig.key].toLowerCase() 
+          : a[sortConfig.key];
+          
+        const bValue = typeof b[sortConfig.key] === 'string' 
+          ? b[sortConfig.key].toLowerCase() 
+          : b[sortConfig.key];
+        
+        // Traitement spécial pour les dates
+        if (sortConfig.key === 'date') {
+          const dateA = new Date(aValue);
+          const dateB = new Date(bValue);
+          
+          if (sortConfig.direction === "ascending") {
+            return dateA - dateB;
+          } else {
+            return dateB - dateA;
+          }
+        }
+        
+        if (aValue < bValue) {
+          return sortConfig.direction === "ascending" ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === "ascending" ? 1 : -1;
+        }
+        return 0;
+      });
     }
-    return 0;
-  });
+    return sortableItems;
+  }, [announcements, sortConfig]);
 
   const filteredAnnouncements = sortedAnnouncements.filter((announcement) =>
-    announcement.title.toLowerCase().includes(searchTerm.toLowerCase())
+    announcement.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    announcement.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const onSubmit = async (data) => {
@@ -87,15 +118,7 @@ const HRCommunication = () => {
 
       const token = localStorage.getItem("access");
       
-      // Simuler une réponse API réussie
-      setSuccessMessage("L'annonce a été publiée avec succès !");
-      reset();
-      
-      setTimeout(() => {
-        setSuccessMessage("");
-      }, 3000);
-      
-        const response = await axios.post(
+      const response = await axios.post(
         "http://localhost:8000/api/announcements/",
         formData,
         {
@@ -110,11 +133,19 @@ const HRCommunication = () => {
       setSuccessMessage("L'annonce a été publiée avec succès !");
       reset();
       
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 3000);
       
     } catch (error) {
       console.error('Upload error:', error);
       alert("Erreur lors de la publication. Veuillez réessayer.");
     }
+  };
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('fr-FR', options);
   };
 
   return (
@@ -125,8 +156,8 @@ const HRCommunication = () => {
       <h1 className="hr-title">Communication RH</h1>
 
       {successMessage && (
-        <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6">
-          <FaCheckCircle className="inline-block mr-2" />
+        <div className="success-message">
+          <FaCheckCircle className="icon" />
           {successMessage}
         </div>
       )}
@@ -135,41 +166,37 @@ const HRCommunication = () => {
         <div className="announcement-form">
           <h2>Publier une nouvelle annonce</h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Titre */}
             <div>
               <label className="block mb-1 font-medium">Titre *</label>
               <input
                 {...register("title")}
-                className="w-full border rounded p-2"
+                className="w-full input-field"
                 placeholder="Titre de l'annonce"
               />
-              {errors.title && <p className="text-red-500">{errors.title.message}</p>}
+              {errors.title && <p className="error">{errors.title.message}</p>}
             </div>
 
-            {/* Contenu */}
             <div>
               <label className="block mb-1 font-medium">Contenu *</label>
               <textarea
                 {...register("content")}
-                className="w-full border rounded p-2"
+                className="w-full input-field"
                 rows="4"
                 placeholder="Contenu détaillé"
               />
-              {errors.content && <p className="text-red-500">{errors.content.message}</p>}
+              {errors.content && <p className="error">{errors.content.message}</p>}
             </div>
 
-            {/* Date */}
             <div>
               <label className="block mb-1 font-medium">Date *</label>
               <input
                 type="date"
                 {...register("date")}
-                className="w-full border rounded p-2"
+                className="w-full input-field"
               />
-              {errors.date && <p className="text-red-500">{errors.date.message}</p>}
+              {errors.date && <p className="error">{errors.date.message}</p>}
             </div>
 
-            {/* Fichier */}
             <div>
               <label className="block mb-1 font-medium">
                 <FaFileUpload className="inline mr-1" /> Pièce jointe
@@ -188,7 +215,7 @@ const HRCommunication = () => {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 transition"
+              className="submit-button"
             >
               Publier
             </button>
@@ -196,7 +223,6 @@ const HRCommunication = () => {
         </div>
       )}
 
-      {/* Barre de recherche et tableau */}
       <div className="search-bar">
         <FaSearch className="search-icon" />
         <input
@@ -204,45 +230,79 @@ const HRCommunication = () => {
           placeholder="Rechercher une annonce..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
         />
       </div>
 
       <div className="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th onClick={() => requestSort("date")}>
-                Date <FaSort className="sort-icon" />
-              </th>
-              <th onClick={() => requestSort("title")}>
-                Titre <FaSort className="sort-icon" />
-              </th>
-              <th>Fichier</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredAnnouncements.map((announcement) => (
-              <tr key={announcement.id}>
-                <td>{new Date(announcement.date).toLocaleDateString()}</td>
-                <td>{announcement.title}</td>
-                <td>
-                  {announcement.file ? (
-                    <a
-                      href={announcement.file}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      Télécharger
-                    </a>
-                  ) : (
-                    <span className="text-gray-400">Aucun fichier</span>
+        {loading ? (
+          <div className="loading">Chargement en cours...</div>
+        ) : error ? (
+          <div className="error">{error}</div>
+        ) : (
+          <table className="announcements-table">
+            <thead>
+              <tr>
+                <th 
+                  onClick={() => requestSort("date")}
+                  className={`sort-header ${sortConfig.key === 'date' ? 'active' : ''}`}
+                >
+                  Date 
+                  {sortConfig.key === 'date' && (
+                    <span className="sort-direction">
+                      {sortConfig.direction === 'ascending' ? '↑' : '↓'}
+                    </span>
                   )}
-                </td>
+                </th>
+                <th 
+                  onClick={() => requestSort("title")}
+                  className={`sort-header ${sortConfig.key === 'title' ? 'active' : ''}`}
+                >
+                  Titre
+                  {sortConfig.key === 'title' && (
+                    <span className="sort-direction">
+                      {sortConfig.direction === 'ascending' ? '↑' : '↓'}
+                    </span>
+                  )}
+                </th>
+                <th>Fichier</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredAnnouncements.length === 0 ? (
+                <tr>
+                  <td colSpan="3" className="no-results">
+                    Aucune annonce trouvée
+                  </td>
+                </tr>
+              ) : (
+                filteredAnnouncements.map((announcement) => (
+                  <tr key={announcement.id}>
+                    <td>{formatDate(announcement.date)}</td>
+                    <td>
+                      <div className="announcement-title">{announcement.title}</div>
+                      <div className="announcement-content">{announcement.content}</div>
+                    </td>
+                    <td>
+                      {announcement.file ? (
+                        <a
+                          href={announcement.file}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="file-link"
+                        >
+                          Télécharger
+                        </a>
+                      ) : (
+                        <span className="no-file">Aucun fichier</span>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
