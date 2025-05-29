@@ -76,7 +76,7 @@ function App() {
                   <Route path="/admin/absence-notifications" element={<AdminAbsenceNotification />} />
                   <Route path="/AdminDemandes" element={<AdminDemandes />} />
                   <Route path="/AdminEmails" element={<AdminEmails />} />
-                  <Route path="/hr-communication" element={<HRCommunication />} />
+                  <Route path="/admin/hr-communication" element={<HRCommunication />} />
                   <Route path="*" element={<Navigate to="/admin/dashboard" />} />
                 </Routes>
               </div>
