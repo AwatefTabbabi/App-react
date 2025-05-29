@@ -1,30 +1,61 @@
 import React, { useState, useEffect } from "react";
-import { FaSearch, FaSort, FaUpload } from "react-icons/fa";
+import { FaSearch, FaSort, FaFileUpload, FaCheckCircle } from "react-icons/fa";
 import "./HRCommunication.css";
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext'; // Chemin vérifié
+import { useAuth } from '../../context/AuthContext';
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import axios from "axios";
+
+const schema = yup.object().shape({
+  title: yup.string().required("Le titre est obligatoire"),
+  content: yup.string().required("Le contenu est obligatoire"),
+  date: yup.string().required("La date est obligatoire"),
+  file: yup.mixed().nullable(),
+});
 
 const HRCommunication = () => {
   const { user } = useAuth();
-  console.log('user auth : ', user)
   const [announcements, setAnnouncements] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
-  const [newAnnouncement, setNewAnnouncement] = useState({
-    title: '',
-    content: '',
-    date: '',
-    file: null
+  const [successMessage, setSuccessMessage] = useState("");
+  
+  const { 
+    register, 
+    handleSubmit, 
+    formState: { errors }, 
+    reset,
+    watch 
+  } = useForm({
+    resolver: yupResolver(schema),
   });
 
+  const fileWatch = watch("file");
+
   useEffect(() => {
-    fetch('/announcements/')
-      .then(data => setAnnouncements(data))
-      .catch(error => console.log('Error:', error));
+    // Simuler un appel API pour récupérer les annonces
+    const mockAnnouncements = [
+      {
+        id: 1,
+        title: "Congés d'été",
+        content: "Planning des congés d'été 2023",
+        date: "2023-06-15",
+        file: null
+      },
+      {
+        id: 2,
+        title: "Nouvelle politique RH",
+        content: "Mise à jour de la politique des congés",
+        date: "2023-05-20",
+        file: "/documents/politique.pdf"
+      }
+    ];
+    setAnnouncements(mockAnnouncements);
   }, []);
 
-  // Déclaration correcte des fonctions dans l'ordre
   const requestSort = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") direction = "desc";
@@ -43,40 +74,46 @@ const HRCommunication = () => {
     announcement.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-
-  const handleFileUpload = (e) => {
-    setNewAnnouncement({
-      ...newAnnouncement,
-      file: e.target.files[0]
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append('title', newAnnouncement.title);
-    formData.append('content', newAnnouncement.content);
-    formData.append('date', newAnnouncement.date);
-    if (newAnnouncement.file) {
-      formData.append('file', newAnnouncement.file);
-    }
-
+  const onSubmit = async (data) => {
     try {
-      const response = await fetch('/api/announcements/', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access')}`
-        },
-        body: formData
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        setAnnouncements([result, ...announcements]);
-        setNewAnnouncement({ title: '', content: '', date: '', file: null });
+      const formData = new FormData();
+      formData.append('title', data.title);
+      formData.append('content', data.content);
+      formData.append('date', data.date);
+      
+      if (data.file && data.file[0]) {
+        formData.append('file', data.file[0]);
       }
+
+      const token = localStorage.getItem("access");
+      
+      // Simuler une réponse API réussie
+      setSuccessMessage("L'annonce a été publiée avec succès !");
+      reset();
+      
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 3000);
+      
+        const response = await axios.post(
+        "http://localhost:8000/api/announcements/",
+        formData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      
+      setAnnouncements([response.data, ...announcements]);
+      setSuccessMessage("L'annonce a été publiée avec succès !");
+      reset();
+      
+      
     } catch (error) {
       console.error('Upload error:', error);
+      alert("Erreur lors de la publication. Veuillez réessayer.");
     }
   };
 
@@ -87,37 +124,74 @@ const HRCommunication = () => {
       </Link>
       <h1 className="hr-title">Communication RH</h1>
 
+      {successMessage && (
+        <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6">
+          <FaCheckCircle className="inline-block mr-2" />
+          {successMessage}
+        </div>
+      )}
+
       {user?.role === 'admin' && (
         <div className="announcement-form">
           <h2>Publier une nouvelle annonce</h2>
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Titre"
-              value={newAnnouncement.title}
-              onChange={(e) => setNewAnnouncement({ ...newAnnouncement, title: e.target.value })}
-              required
-            />
-            <textarea
-              placeholder="Contenu"
-              value={newAnnouncement.content}
-              onChange={(e) => setNewAnnouncement({ ...newAnnouncement, content: e.target.value })}
-              required
-            />
-            <input
-              type="date"
-              value={newAnnouncement.date}
-              onChange={(e) => setNewAnnouncement({ ...newAnnouncement, date: e.target.value })}
-              required
-            />
-            <div className="file-upload">
-              <label>
-                <FaUpload /> Joindre un fichier
-                <input type="file" onChange={handleFileUpload} hidden />
-              </label>
-              {newAnnouncement.file && <span>{newAnnouncement.file.name}</span>}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Titre */}
+            <div>
+              <label className="block mb-1 font-medium">Titre *</label>
+              <input
+                {...register("title")}
+                className="w-full border rounded p-2"
+                placeholder="Titre de l'annonce"
+              />
+              {errors.title && <p className="text-red-500">{errors.title.message}</p>}
             </div>
-            <button type="submit">Publier</button>
+
+            {/* Contenu */}
+            <div>
+              <label className="block mb-1 font-medium">Contenu *</label>
+              <textarea
+                {...register("content")}
+                className="w-full border rounded p-2"
+                rows="4"
+                placeholder="Contenu détaillé"
+              />
+              {errors.content && <p className="text-red-500">{errors.content.message}</p>}
+            </div>
+
+            {/* Date */}
+            <div>
+              <label className="block mb-1 font-medium">Date *</label>
+              <input
+                type="date"
+                {...register("date")}
+                className="w-full border rounded p-2"
+              />
+              {errors.date && <p className="text-red-500">{errors.date.message}</p>}
+            </div>
+
+            {/* Fichier */}
+            <div>
+              <label className="block mb-1 font-medium">
+                <FaFileUpload className="inline mr-1" /> Pièce jointe
+              </label>
+              <div className="file-upload-container">
+                <label className="file-upload-label">
+                  {fileWatch?.[0]?.name || "Choisir un fichier"}
+                  <input 
+                    type="file" 
+                    {...register("file")} 
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 transition"
+            >
+              Publier
+            </button>
           </form>
         </div>
       )}
@@ -152,14 +226,17 @@ const HRCommunication = () => {
                 <td>{new Date(announcement.date).toLocaleDateString()}</td>
                 <td>{announcement.title}</td>
                 <td>
-                  {announcement.file && (
+                  {announcement.file ? (
                     <a
                       href={announcement.file}
                       target="_blank"
                       rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
                     >
                       Télécharger
                     </a>
+                  ) : (
+                    <span className="text-gray-400">Aucun fichier</span>
                   )}
                 </td>
               </tr>
