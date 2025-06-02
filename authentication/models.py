@@ -106,7 +106,6 @@ class HRAnnouncement(models.Model):
         null=True,
         verbose_name="Fichier joint"
     )
-    # ... autres champs
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -128,9 +127,6 @@ def cancel_all_by_type(cls, absence_type, user):
         user=user,
         status='pending'
     ).update(status='cancelled')
-
-
-
 
 class UserInquiry(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="inquiries")

@@ -603,11 +603,8 @@ def get_catalogue(request):
 from .models import Reclamation
 from .serializers import ReclamationSerializer
 
-
-from rest_framework import generics, permissions
-
 class ReclamationCreateView(generics.CreateAPIView):
-    permission_classes = [permissions.AllowAny]  # Autoriser l'accès sans authentification
+    permission_classes = [permissions.AllowAny]  
     serializer_class = ReclamationSerializer
 
     def post(self, request, *args, **kwargs):
