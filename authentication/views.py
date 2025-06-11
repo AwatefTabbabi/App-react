@@ -274,7 +274,7 @@ def get_announcements(request):
         return Response(serializer.data)
     except Exception as e:
         return Response({'error': str(e)}, status=500)
-# Vue pour publier une nouvelle annonce RH
+
 @api_view(['POST'])
 def create_announcement(request):
     try:
