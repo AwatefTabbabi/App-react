@@ -53,6 +53,5 @@ pipeline {
         echo '❌ Échec du pipeline Django.'
         bat "docker-compose -f ${COMPOSE_FILE} logs"
     }
-    // cleanup { ... }  // Commentez ou supprimez cette section
 }
 }
