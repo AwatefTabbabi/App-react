@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-
+import FakeChatbot from './components/FakeChatbot'; 
 import SideBar from "./components/Sidebar/SideBar";
 import AdminSidebar from "./components/Sidebar/AdminSidebar"; // 🔹 Sidebar Admin ajoutée
 import Navbar from "./components/Navbar";
@@ -61,6 +61,7 @@ function App() {
         <>
           <Navbar onLogout={handleLogout} />
           <ChatBotComponent /> 
+          <FakeChatbot />
           {role === "admin" ? (
             <div className="admin-main-container">
               {/* Sidebar à gauche */}
