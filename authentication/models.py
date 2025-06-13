@@ -1,7 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from rest_framework import serializers
-
+from django.db import models
+from django.db import models
+from .models import CatalogueFormation  
+from django.contrib.auth import get_user_model
+User = get_user_model()
 # Define AccountManager before the User model
 class AccountManager(BaseUserManager):
     def create_user(self, email, login, phone, password=None, **extra_fields):
@@ -99,6 +104,7 @@ class DocumentRequest(models.Model):
     comment = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='En cours')
     created_at = models.DateTimeField(auto_now_add=True)
+
 class HRAnnouncement(models.Model):
     file = models.FileField(
         upload_to='announcements/files/',
@@ -110,6 +116,7 @@ class HRAnnouncement(models.Model):
 
     def __str__(self):
         return self.title
+
 
 class TrainingCourse(models.Model):
     name = models.CharField(max_length=200)
@@ -136,10 +143,6 @@ class UserInquiry(models.Model):
 
     def __str__(self):
         return f"Inquiry from {self.user.email} - {self.subject}"
-from django.db import models
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
 
 class CatalogueFormation(models.Model):
     CATEGORY_CHOICES = [
@@ -169,11 +172,7 @@ class CatalogueFormation(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.category})"
-from django.db import models
-from django.contrib.auth import get_user_model
-from .models import CatalogueFormation  # ou import relatif
 
-User = get_user_model()
 
 class Inscription(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

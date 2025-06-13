@@ -1,29 +1,39 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import authenticate, login, logout
-from authentication.models import User
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.db import IntegrityError
-from django.contrib.auth import get_user_model
-from .models import AbsenceRequest, DocumentRequest, HRAnnouncement, TrainingCourse
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.exceptions import InvalidToken, AuthenticationFailed
-import json
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.utils import timezone
+from django.db.models import Count
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.authentication import TokenAuthentication
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import AllowAny
-
-import json
-import logging
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken, UntypedToken
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError, AuthenticationFailed
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
-from django.contrib.auth.decorators import login_required
-from .models import AbsenceRequest
-# views.py
-from .models import HRAnnouncement  
-logger = logging.getLogger(__name__)
+from rest_framework import status, generics, permissions
+import json, logging, requests
+from django.conf import settings
 
+from .models import (
+    AbsenceRequest, DocumentRequest, HRAnnouncement, TrainingCourse, 
+    CatalogueFormation, Inscription, UserInquiry, Reclamation
+)
+from .serializers import (
+    AbsenceRequestSerializer, DocumentRequestSerializer, 
+    HRAnnouncementSerializer, InscriptionSerializer, 
+    CatalogueSerializer, ReclamationSerializer, UserInquirySerializer
+)
+
+logger = logging.getLogger(__name__)
+User = get_user_model()
+# Vue de connexion utilisateur avec génération de JWT
 @csrf_exempt
 def login_view(request):
     if request.method == 'POST':
@@ -57,17 +67,12 @@ def login_view(request):
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
-
+# Vue de déconnexion utilisateur
 @csrf_exempt
 def logout_view(request):
     logout(request)
     return JsonResponse({'status': 'success', 'message': 'Logged out successfully'})
-
-
-
-
-User = get_user_model()
-
+# Vue de création d'un nouveau compte utilisateur
 @csrf_exempt
 def signup(request):
     if request.method == 'POST':
@@ -116,16 +121,7 @@ def signup(request):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
     return JsonResponse({'error': 'Method not allowed'}, status=405)
-
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-
-from django.core.mail import send_mail
-from django.urls import reverse
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
+# Vue d'envoi d'un email de réinitialisation de mot de passe
 @api_view(['POST'])
 @permission_classes([AllowAny])
 @authentication_classes([])
@@ -152,9 +148,7 @@ def forgot_password(request):
         return Response({'message': 'Reset email sent.'}, status=status.HTTP_200_OK)
     except User.DoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-
-from django.utils.http import urlsafe_base64_decode
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
+# Vue de réinitialisation du mot de passe via lien email
 @permission_classes([AllowAny])
 class ResetPasswordView(APIView):
     def post(self, request, uidb64, token):
@@ -172,8 +166,7 @@ class ResetPasswordView(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status=400)
 
-logger = logging.getLogger(__name__)
-
+# Vue pour créer une demande d'absence (côté utilisateur)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_absence_request(request):
@@ -211,8 +204,7 @@ def create_absence_request(request):
     except Exception as e:
         logger.error(f"Erreur create_absence_request : {e}")
         return JsonResponse({'error': str(e)}, status=400)
-
-
+# Vue pour annuler une demande d'absence
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def cancel_absence(request):
@@ -273,6 +265,7 @@ def document_request(request):
     except Exception as e:
         logger.error(f"Erreur document_request : {e}")
         return JsonResponse({'error': str(e)}, status=400)
+# Vue pour consulter les annonces RH
 @api_view(['GET'])
 def get_announcements(request):
     try:
@@ -295,7 +288,7 @@ def create_announcement(request):
         return Response(serializer.errors, status=400)
     except Exception as e:
         return Response({'error': str(e)}, status=500)
-
+# Vue pour consulter le catalogue de formations simple (sans DRF)
 def training_catalog(request):
     try:
         courses = TrainingCourse.objects.all().values(
@@ -310,6 +303,7 @@ def training_catalog(request):
         return JsonResponse(list(courses), safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+# Vue pour récupérer les absences d'un utilisateur connecté
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
 def get_absences(request):
@@ -319,9 +313,8 @@ def get_absences(request):
     'starts_afternoon', 'ends_afternoon',
 )
     return JsonResponse(list(absences), safe=False)
-# Ajoutez ceci dans views.py
-from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 
+# Vue pour récupérer les infos du compte connecté via JWT
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
@@ -355,8 +348,7 @@ def get_account_by_email(request):
     except Exception as e:
         print(f"Erreur inconnue: {str(e)}")  # Log pour toute autre erreur
         return JsonResponse({"error": f"Erreur inconnue: {str(e)}"}, status=500)
-
-# views.py
+# Vue pour mettre à jour les contacts (téléphone, fax)
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
@@ -373,18 +365,7 @@ def update_contact(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
     
-from django.utils import timezone
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAdminUser
-from rest_framework.response import Response
-from .models import AbsenceRequest, DocumentRequest, UserInquiry
-from .serializers import AbsenceRequestSerializer, DocumentRequestSerializer, UserInquirySerializer
-
-from rest_framework.response import Response  # <-- Ajouter
-from .models import AbsenceRequest, DocumentRequest  # <-- Vérifier l'import
-from .serializers import AbsenceRequestSerializer, DocumentRequestSerializer  # <-- Ajouter
-
-# views.py (get_demandes)
+# Vue pour que l'admin récupère toutes les demandes RH (absences et documents)
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAdminUser])
@@ -401,7 +382,7 @@ def get_demandes(request):
         return Response(data)
     except Exception as e:
         return Response({"error": str(e)}, status=500)
-
+# Vue pour créer une réclamation ou une question utilisateur
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_inquiry(request):
@@ -414,7 +395,7 @@ def create_inquiry(request):
 
     inquiry = UserInquiry.objects.create(user=user, subject=subject, message=message)
     return Response({"message": "Inquiry submitted successfully"}, status=201)
-# views.py
+# Vue pour que l'admin change le statut d'une demande d'absence
 @api_view(['PATCH'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAdminUser])
@@ -433,7 +414,7 @@ def update_absence_status(request, id):
     
     except AbsenceRequest.DoesNotExist:
         return Response({"error": "Demande introuvable"}, status=404)
-
+# Vue pour que l'admin change le statut d'une demande de document
 @api_view(['PATCH'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAdminUser])
@@ -453,14 +434,7 @@ def update_document_status(request, id):
     except DocumentRequest.DoesNotExist:
         return Response({"error": "Demande introuvable"}, status=404)
     
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import get_user_model
-import json
-from rest_framework_simplejwt.tokens import UntypedToken
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
-from .models import CatalogueFormation
-
+# Vue API manuelle avec JWT pour le catalogue des formations
 @csrf_exempt
 def catalogue_api(request):
     # Authentification JWT
@@ -529,9 +503,7 @@ def catalogue_api(request):
     return JsonResponse(data, safe=False)
 
     return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
-
-
-
+# Vue DRF pour consultation / création de formation avec JWT
 @api_view(['GET', 'POST'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
@@ -548,12 +520,7 @@ def catalogue_drf(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-from rest_framework import generics, permissions
-from rest_framework.response import Response
-from rest_framework import status
-from .models import Inscription, CatalogueFormation
-from .serializers import InscriptionSerializer
-
+# Vue DRF pour l'inscription à une formation (CreateAPIView)
 class InscriptionCreateAPIView(generics.CreateAPIView):
     serializer_class = InscriptionSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -578,10 +545,7 @@ class InscriptionCreateAPIView(generics.CreateAPIView):
 
         serializer = self.get_serializer(inscription)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-from django.db.models import Count
-from .models import CatalogueFormation , Inscription
-
+# Vue simple pour retourner les formations avec nombre d’inscrits
 def get_catalogue(request):
     formations = CatalogueFormation.objects.annotate(
         num_inscrits=Count('inscription')  # Compte le nombre d'inscriptions
@@ -599,13 +563,7 @@ def get_catalogue(request):
         for formation in formations
     ]
     return JsonResponse(response, safe=False)
-
-from .models import Reclamation
-from .serializers import ReclamationSerializer
-
-
-from rest_framework import generics, permissions
-
+# Vue DRF pour créer une réclamation (accès public)
 class ReclamationCreateView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]  # Autoriser l'accès sans authentification
     serializer_class = ReclamationSerializer
@@ -618,22 +576,12 @@ class ReclamationCreateView(generics.CreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     from rest_framework import generics
-from .models import Reclamation
-from .serializers import ReclamationSerializer
-from rest_framework.permissions import IsAdminUser
-
+# Vue DRF pour lister toutes les réclamations (admin uniquement)
 class ReclamationListView(generics.ListAPIView):
     queryset = Reclamation.objects.all().order_by('-created_at')
     serializer_class = ReclamationSerializer
     permission_classes = [IsAdminUser]  # Limité à l’admin
-
-import requests
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import AllowAny
-from django.conf import settings
-
+# Vue intégrée avec OpenRouter API pour ChatGPT00
 class ChatGPTAPIView(APIView):
     permission_classes = [AllowAny]
 
