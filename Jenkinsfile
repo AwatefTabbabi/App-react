@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo ' Clonage du dépôt...'
+                echo 'Clonage du dépôt...'
                 checkout scm
             }
         }
@@ -19,7 +19,7 @@ pipeline {
         stage('Run containers') {
             steps {
                 echo 'Lancement des conteneurs Docker...'
-                bat 'docker-compose down || exit 0' 
+                bat 'docker-compose down || exit 0'
                 bat 'docker-compose up -d'
             }
         }
@@ -29,7 +29,7 @@ pipeline {
                 script {
                     waitUntil {
                         try {
-                            bat 'docker exec django_web python manage.py check --database default'
+                            bat 'docker exec django_web python manage.py migrate'
                             return true
                         } catch (Exception e) {
                             sleep(5)
@@ -39,19 +39,20 @@ pipeline {
                     bat """
                         docker exec django_web python manage.py makemigrations
                         docker exec django_web python manage.py migrate
+                        docker exec django_web python manage.py check --database default
                     """
                 }
             }
         }
     }
 
-   post {
-    success {
-        echo 'Backend Django déployé avec succès !'
+    post {
+        success {
+            echo '✅ Backend Django déployé avec succès !'
+        }
+        failure {
+            echo '❌ Échec du pipeline Django.'
+            bat 'docker-compose logs'
+        }
     }
-    failure {
-        echo 'Échec du pipeline Django.'
-        bat "docker-compose -f ${COMPOSE_FILE} logs"
-    }
-}
 }
