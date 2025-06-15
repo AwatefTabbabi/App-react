@@ -19,7 +19,7 @@ pipeline {
         stage('Run containers') {
             steps {
                 echo ' Lancement des conteneurs Docker...'
-                bat 'docker-compose down || exit 0' // Correction pour Windows
+                bat 'docker-compose down || exit 0'
                 bat 'docker-compose up -d'
             }
         }
@@ -47,12 +47,16 @@ pipeline {
 
     post {
         success {
-            echo ' Backend Django déployé avec succès !'
+            echo 'Backend Django déployé avec succès !'
         }
         failure {
             echo ' Échec du pipeline Django.'
             script {
-                bat "docker-compose logs"
+                try {
+                    bat(returnStatus: true, script: 'docker-compose logs')
+                } catch (err) {
+                    echo "Impossible d'afficher les logs Docker : ${err}"
+                }
             }
         }
     }
