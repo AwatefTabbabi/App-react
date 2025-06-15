@@ -1,6 +1,8 @@
 // src/components/ChatBotComponent.js
 import React, { useEffect } from "react";
-
+import { Widget, addResponseMessage } from "react-chat-widget";
+import "react-chat-widget/lib/styles.css";
+import FakeChatbot from "./FakeChatbot";
 
 function ChatBotComponent() {
   useEffect(() => {
