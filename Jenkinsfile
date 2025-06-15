@@ -11,15 +11,15 @@ pipeline {
 
         stage('Build Docker containers') {
             steps {
-                echo ' Construction des conteneurs Docker...'
+                echo 'Construction des conteneurs Docker...'
                 bat 'docker-compose build'
             }
         }
 
         stage('Run containers') {
             steps {
-                echo ' Lancement des conteneurs Docker...'
-                bat 'docker-compose down || exit 0'
+                echo 'Lancement des conteneurs Docker...'
+                bat 'docker-compose down || exit 0' 
                 bat 'docker-compose up -d'
             }
         }
@@ -45,19 +45,13 @@ pipeline {
         }
     }
 
-    post {
-        success {
-            echo 'Backend Django déployé avec succès !'
-        }
-        failure {
-            echo ' Échec du pipeline Django.'
-            script {
-                try {
-                    bat(returnStatus: true, script: 'docker-compose logs')
-                } catch (err) {
-                    echo "Impossible d'afficher les logs Docker : ${err}"
-                }
-            }
-        }
+   post {
+    success {
+        echo 'Backend Django déployé avec succès !'
     }
+    failure {
+        echo 'Échec du pipeline Django.'
+        bat "docker-compose -f ${COMPOSE_FILE} logs"
+    }
+}
 }
