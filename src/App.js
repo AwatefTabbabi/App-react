@@ -61,7 +61,6 @@ function App() {
         <>
           <Navbar onLogout={handleLogout} />
           <ChatBotComponent /> 
-          <FakeChatbot />
           {role === "admin" ? (
             <div className="admin-main-container">
               {/* Sidebar à gauche */}
