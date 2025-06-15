@@ -4,21 +4,21 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo '📦 Clonage du dépôt...'
+                echo ' Clonage du dépôt...'
                 checkout scm
             }
         }
 
         stage('Build Docker containers') {
             steps {
-                echo '🐳 Construction des conteneurs Docker...'
+                echo ' Construction des conteneurs Docker...'
                 bat 'docker-compose build'
             }
         }
 
         stage('Run containers') {
             steps {
-                echo '🚀 Lancement des conteneurs Docker...'
+                echo ' Lancement des conteneurs Docker...'
                 bat 'docker-compose down || exit 0' // Correction pour Windows
                 bat 'docker-compose up -d'
             }
@@ -45,14 +45,15 @@ pipeline {
         }
     }
 
-   post {
-    success {
-        echo '✅ Backend Django déployé avec succès !'
+    post {
+        success {
+            echo ' Backend Django déployé avec succès !'
+        }
+        failure {
+            echo ' Échec du pipeline Django.'
+            script {
+                bat "docker-compose logs"
+            }
+        }
     }
-    failure {
-        echo '❌ Échec du pipeline Django.'
-        bat "docker-compose -f ${COMPOSE_FILE} logs"
-    }
-    // cleanup { ... }  // Commentez ou supprimez cette section
-}
 }
